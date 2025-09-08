@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 
-import { getPopularGames } from "../../../utils";
-
 import SearchBar from "../../../components/common/SearchBar";
 
 import { Gamepad2, Star, Users } from "lucide-react";

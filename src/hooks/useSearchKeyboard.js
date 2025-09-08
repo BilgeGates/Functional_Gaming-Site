@@ -4,15 +4,12 @@ const useSearchKeyboard = ({
   searchRef,
   showResults,
   searchResults = [],
-  recentSearches = [],
-  popularGames = [],
   selectedResultIndex,
   setSelectedResultIndex,
   visibleCount,
   searchTerm,
   handleResultClick,
   handleGameSelect,
-  onAddRecentSearch,
   setShowResults,
   setShowFilters,
 }) => {
@@ -26,33 +23,40 @@ const useSearchKeyboard = ({
     };
 
     const handleKeyDown = (event) => {
-      const currentResults = searchTerm.trim()
-        ? searchResults
-        : [...recentSearches, ...popularGames];
+      if (!showResults || searchResults.length === 0) return;
 
-      if (!showResults || currentResults.length === 0) return;
+      const maxIndex = Math.min(visibleCount - 1, searchResults.length - 1);
 
       switch (event.key) {
         case "Escape":
+          event.preventDefault();
           setShowResults(false);
           setSelectedResultIndex(-1);
           break;
         case "ArrowDown":
           event.preventDefault();
-          setSelectedResultIndex((prev) =>
-            prev < Math.min(visibleCount - 1, currentResults.length - 1)
-              ? prev + 1
-              : prev
-          );
+          setSelectedResultIndex((prev) => {
+            if (prev < maxIndex) {
+              return prev + 1;
+            }
+            return prev;
+          });
           break;
         case "ArrowUp":
           event.preventDefault();
-          setSelectedResultIndex((prev) => (prev > 0 ? prev - 1 : -1));
+          setSelectedResultIndex((prev) => {
+            if (prev > 0) {
+              return prev - 1;
+            } else if (prev === 0) {
+              return -1;
+            }
+            return prev;
+          });
           break;
         case "Enter":
           event.preventDefault();
-          if (selectedResultIndex >= 0 && currentResults[selectedResultIndex]) {
-            const selectedGame = currentResults[selectedResultIndex];
+          if (selectedResultIndex >= 0 && searchResults[selectedResultIndex]) {
+            const selectedGame = searchResults[selectedResultIndex];
             handleResultClick(selectedGame, handleGameSelect);
           }
           break;
@@ -77,15 +81,10 @@ const useSearchKeyboard = ({
     handleGameSelect,
     visibleCount,
     searchTerm,
-    recentSearches,
-    popularGames,
-    onAddRecentSearch,
     setShowResults,
     setShowFilters,
     setSelectedResultIndex,
   ]);
-
-  return { handleKeyDown: (e) => {} };
 };
 
 export default useSearchKeyboard;

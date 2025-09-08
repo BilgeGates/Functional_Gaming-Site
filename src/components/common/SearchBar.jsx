@@ -53,24 +53,29 @@ const SearchBar = ({
     handleClearSearch,
     handleFilterChange,
     handleResultClick,
+    resetVisibleCount,
   } = useSearch({ handleSearch });
 
   // External props override internal state if provided
-  const currentSearchTerm = externalSearchTerm ?? searchTerm;
-  const currentShowFilters = externalShowFilters ?? showFilters;
+  const currentSearchTerm =
+    externalSearchTerm !== undefined ? externalSearchTerm : searchTerm;
+  const currentShowFilters =
+    externalShowFilters !== undefined ? externalShowFilters : showFilters;
+  const currentSelectedGenre =
+    externalSelectedGenre !== undefined ? externalSelectedGenre : selectedGenre;
+  const currentSortBy = externalSortBy !== undefined ? externalSortBy : sortBy;
+  const currentShowResults =
+    externalShowResults !== undefined ? externalShowResults : showResults;
 
-  const safeGenres = genres || [];
-  const displayGenres = safeGenres.slice(0, 5);
-
-  const currentSelectedGenre = externalSelectedGenre ?? selectedGenre;
-  const currentSortBy = externalSortBy ?? sortBy;
-  const currentShowResults = externalShowResults ?? showResults;
-
-  const setCurrentSearchTerm = externalSetSearchTerm ?? setSearchTerm;
-  const setCurrentShowFilters = externalSetShowFilters ?? setShowFilters;
+  const setCurrentSearchTerm = externalSetSearchTerm || setSearchTerm;
+  const setCurrentShowFilters = externalSetShowFilters || setShowFilters;
   const setCurrentSelectedGenre =
-    externalSetSelectedGenre ?? setInternalSelectedGenre;
-  const setCurrentSortBy = externalSetSortBy ?? setInternalSortBy;
+    externalSetSelectedGenre || setInternalSelectedGenre;
+  const setCurrentSortBy = externalSetSortBy || setInternalSortBy;
+  const setCurrentShowResults = externalSetShowResults || setShowResults;
+
+  const safeGenres = Array.isArray(genres) ? genres : [];
+  const displayGenres = safeGenres.slice(0, 5);
 
   // Keyboard navigation
   useSearchKeyboard({
@@ -83,7 +88,7 @@ const SearchBar = ({
     searchTerm: currentSearchTerm,
     handleResultClick,
     handleGameSelect,
-    setShowResults: externalSetShowResults ?? setShowResults,
+    setShowResults: setCurrentShowResults,
     setShowFilters: setCurrentShowFilters,
   });
 
@@ -92,15 +97,49 @@ const SearchBar = ({
     (e) => {
       const value = e.target.value;
       setCurrentSearchTerm(value);
-      handleInputChange(value);
+
+      if (externalSetSearchTerm) {
+        // If external state management, just update external state
+        if (value.trim()) {
+          setCurrentShowResults(true);
+          handleSearch?.(value, currentSelectedGenre, currentSortBy);
+        } else {
+          setCurrentShowResults(false);
+        }
+      } else {
+        // Use internal state management
+        handleInputChange(value);
+      }
     },
-    [setCurrentSearchTerm, handleInputChange]
+    [
+      setCurrentSearchTerm,
+      handleInputChange,
+      setCurrentShowResults,
+      handleSearch,
+      currentSelectedGenre,
+      currentSortBy,
+      externalSetSearchTerm,
+    ]
   );
 
   const onClearSearch = useCallback(() => {
     setCurrentSearchTerm("");
-    handleClearSearch(clearSearch);
-  }, [setCurrentSearchTerm, handleClearSearch, clearSearch]);
+    setCurrentShowResults(false);
+    setSelectedResultIndex(-1);
+    if (clearSearch) {
+      clearSearch();
+    }
+    if (!externalSetSearchTerm) {
+      handleClearSearch(clearSearch);
+    }
+  }, [
+    setCurrentSearchTerm,
+    setCurrentShowResults,
+    setSelectedResultIndex,
+    handleClearSearch,
+    clearSearch,
+    externalSetSearchTerm,
+  ]);
 
   const onFilterChange = useCallback(
     (filterType, value) => {
@@ -112,26 +151,34 @@ const SearchBar = ({
         setCurrentSortBy(value);
       }
 
-      // Call the internal filter change handler
-      handleFilterChange(filterType, value);
+      // Show results when filter is applied
+      setCurrentShowResults(true);
 
       // Get current values for search
       const genre = filterType === "genre" ? value : currentSelectedGenre;
       const sort = filterType === "sort" ? value : currentSortBy;
 
-      // Trigger search with updated filters
-      if (handleSearch) {
-        handleSearch(currentSearchTerm, genre, sort);
+      // If external state management, trigger search directly
+      if (externalSetSelectedGenre || externalSetSortBy) {
+        if (handleSearch) {
+          handleSearch(currentSearchTerm, genre, sort);
+        }
+      } else {
+        // Use internal filter change handler
+        handleFilterChange(filterType, value);
       }
     },
     [
       setCurrentSelectedGenre,
       setCurrentSortBy,
+      setCurrentShowResults,
       handleFilterChange,
       handleSearch,
       currentSearchTerm,
       currentSelectedGenre,
       currentSortBy,
+      externalSetSelectedGenre,
+      externalSetSortBy,
     ]
   );
 
@@ -141,12 +188,21 @@ const SearchBar = ({
       setCurrentSelectedGenre(genre.id);
       setCurrentSearchTerm("");
 
+      // Show results when genre is clicked
+      setCurrentShowResults(true);
+
       // Trigger search with new genre
       if (handleSearch) {
         handleSearch("", genre.id, currentSortBy);
       }
     },
-    [setCurrentSelectedGenre, setCurrentSearchTerm, handleSearch, currentSortBy]
+    [
+      setCurrentSelectedGenre,
+      setCurrentSearchTerm,
+      handleSearch,
+      currentSortBy,
+      setCurrentShowResults,
+    ]
   );
 
   const onResultsScroll = useCallback(
@@ -171,10 +227,35 @@ const SearchBar = ({
     [toggleFavorite]
   );
 
+  const onResultClick = useCallback(
+    (game) => {
+      if (externalSetShowResults) {
+        // External state management
+        if (handleGameSelect) {
+          handleGameSelect(game);
+        }
+        setCurrentShowResults(false);
+        setSelectedResultIndex(-1);
+      } else {
+        // Internal state management
+        handleResultClick(game, handleGameSelect);
+      }
+    },
+    [
+      handleResultClick,
+      handleGameSelect,
+      setCurrentShowResults,
+      setSelectedResultIndex,
+      externalSetShowResults,
+    ]
+  );
+
+  // Updated condition to show results when there are search results or filters applied
   const shouldShowSearchResults =
     !isSearching &&
-    (currentSearchTerm.trim() || currentSelectedGenre) &&
-    currentShowResults;
+    currentShowResults &&
+    (currentSearchTerm.trim() || currentSelectedGenre);
+
   const hasAnyResults = searchResults.length > 0;
 
   return (
@@ -311,7 +392,7 @@ const SearchBar = ({
                 >
                   <option
                     className="bg-gray-900 text-gray-200"
-                    valuse="popularity"
+                    value="popularity"
                   >
                     Popularity
                   </option>
@@ -353,7 +434,12 @@ const SearchBar = ({
               ? "opacity-100 max-h-80 sm:max-h-96 pointer-events-auto"
               : "opacity-0 max-h-0 pointer-events-none"
           }`}
-        style={{ borderColor: "rgba(255, 255, 255, 0.2)", zIndex: "9999" }}
+        style={{
+          borderColor: "rgba(255, 255, 255, 0.2)",
+          zIndex: "9999",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
         onScroll={onResultsScroll}
       >
         {/* Loading State */}
@@ -374,6 +460,13 @@ const SearchBar = ({
             <h3 className="text-gray-800 font-semibold mb-3 flex items-center gap-2 text-sm sm:text-base">
               <Search size={14} />
               {searchResults.length} games found
+              {currentSelectedGenre && (
+                <span className="text-xs text-gray-600 ml-2">
+                  in{" "}
+                  {safeGenres.find((g) => g.id === currentSelectedGenre)
+                    ?.name || "selected genre"}
+                </span>
+              )}
             </h3>
             <div className="space-y-1">
               {searchResults.slice(0, visibleCount).map((game, index) => (
@@ -382,9 +475,7 @@ const SearchBar = ({
                   game={game}
                   index={index}
                   selectedResultIndex={selectedResultIndex}
-                  onResultClick={(game) =>
-                    handleResultClick(game, handleGameSelect)
-                  }
+                  onResultClick={onResultClick}
                   onFavoriteToggle={handleFavoriteToggle}
                   onRatingClick={openRatingModal}
                   getRatingColor={getRatingColor}
@@ -401,11 +492,27 @@ const SearchBar = ({
         {shouldShowSearchResults && !hasAnyResults && (
           <div className="p-6 sm:p-8 text-center">
             <div className="text-gray-500 italic text-base sm:text-lg">
-              No results found for "{currentSearchTerm}"
+              {currentSearchTerm.trim()
+                ? `No results found for "${currentSearchTerm}"`
+                : currentSelectedGenre
+                ? `No games found for ${
+                    safeGenres.find((g) => g.id === currentSelectedGenre)
+                      ?.name || "selected genre"
+                  }`
+                : "No games found for selected filters"}
             </div>
             <div className="text-gray-400 text-sm mt-2">
               Try a different search term or genre
             </div>
+          </div>
+        )}
+
+        {/* Debug Info - Bu hissəni production-da silin */}
+        {process.env.NODE_ENV === "development" && shouldShowSearchResults && (
+          <div className="p-2 bg-yellow-100 text-xs text-gray-700 border-t">
+            Debug: Results={searchResults?.length || 0}, Term="
+            {currentSearchTerm}", Genre="{currentSelectedGenre}", Show=
+            {currentShowResults ? "true" : "false"}
           </div>
         )}
 
@@ -421,6 +528,13 @@ const SearchBar = ({
           </div>
         )}
       </div>
+
+      {/* Global CSS for hiding webkit scrollbar */}
+      <style jsx>{`
+        .bg-white.bg-opacity-95::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };

@@ -30,6 +30,16 @@ const SearchGameItem = ({
   isGameFavorited,
   formatDate,
 }) => {
+  const handleClick = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (onResultClick) {
+        onResultClick(game);
+      }
+    },
+    [onResultClick, game]
+  );
+
   const handleFavoriteToggle = useCallback(
     (e) => {
       e.preventDefault();
@@ -71,7 +81,7 @@ const SearchGameItem = ({
         animationDelay: `${index * 50}ms`,
         animationFillMode: "forwards",
       }}
-      onClick={() => onResultClick(game)}
+      onClick={handleClick}
       role="option"
       aria-selected={selectedResultIndex === index}
     >

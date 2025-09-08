@@ -29,9 +29,16 @@ const useSearch = ({ handleSearch, onAddRecentSearch } = {}) => {
       }
 
       searchTimeoutRef.current = setTimeout(async () => {
-        if (handleSearch) await handleSearch(value, genre, sort);
-        setVisibleCount(7);
-        setIsSearching(false);
+        try {
+          if (handleSearch) {
+            await handleSearch(value, genre, sort);
+          }
+          setVisibleCount(7);
+        } catch (error) {
+          console.error("Search error:", error);
+        } finally {
+          setIsSearching(false);
+        }
       }, 300);
     },
     [handleSearch]
@@ -39,7 +46,6 @@ const useSearch = ({ handleSearch, onAddRecentSearch } = {}) => {
 
   const handleInputChange = useCallback(
     (value) => {
-      setSearchTerm(value);
       setSelectedResultIndex(-1);
 
       if (value.trim()) {
@@ -48,20 +54,24 @@ const useSearch = ({ handleSearch, onAddRecentSearch } = {}) => {
       } else {
         setShowResults(false);
         setIsSearching(false);
+        if (searchTimeoutRef.current) {
+          clearTimeout(searchTimeoutRef.current);
+        }
       }
     },
     [debouncedSearch, selectedGenre, sortBy]
   );
 
   const handleInputFocus = useCallback(() => {
-    if (!searchTerm.trim()) {
-      setShowResults(false);
-    } else {
+    if (searchTerm.trim()) {
       setShowResults(true);
     }
   }, [searchTerm]);
 
   const handleClearSearch = useCallback((clearFn) => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
     if (clearFn) clearFn();
     setSearchTerm("");
     setShowResults(false);
@@ -79,6 +89,7 @@ const useSearch = ({ handleSearch, onAddRecentSearch } = {}) => {
       const newSort = filterType === "sort" ? value : sortBy;
 
       setShowResults(true);
+      setSelectedResultIndex(-1);
       debouncedSearch(searchTerm, newGenre, newSort);
     },
     [selectedGenre, sortBy, searchTerm, debouncedSearch]
@@ -86,8 +97,12 @@ const useSearch = ({ handleSearch, onAddRecentSearch } = {}) => {
 
   const handleResultClick = useCallback(
     (game, handleGameSelect) => {
-      handleGameSelect?.(game);
-      onAddRecentSearch?.(game);
+      if (handleGameSelect) {
+        handleGameSelect(game);
+      }
+      if (onAddRecentSearch) {
+        onAddRecentSearch(game);
+      }
       setShowResults(false);
       setSelectedResultIndex(-1);
       setVisibleCount(7);
@@ -97,11 +112,17 @@ const useSearch = ({ handleSearch, onAddRecentSearch } = {}) => {
 
   const handlePopularGenreClick = useCallback(
     (genre) => {
+      console.log("useSearch: handlePopularGenreClick called", genre); // Debug
       setSelectedGenre(genre.id);
       setSearchTerm("");
       setShowResults(true);
-      handleSearch?.("", genre.id, sortBy);
+      setSelectedResultIndex(-1);
       setVisibleCount(7);
+
+      if (handleSearch) {
+        console.log("useSearch: calling handleSearch with genre", genre.id); // Debug
+        handleSearch("", genre.id, sortBy);
+      }
     },
     [handleSearch, sortBy]
   );
@@ -115,6 +136,9 @@ const useSearch = ({ handleSearch, onAddRecentSearch } = {}) => {
   }, []);
 
   const resetSearch = useCallback(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
     setSearchTerm("");
     setSelectedGenre("");
     setSortBy("relevance");
@@ -124,6 +148,10 @@ const useSearch = ({ handleSearch, onAddRecentSearch } = {}) => {
     setIsSearching(false);
     setVisibleCount(7);
     setLoadingMore(false);
+  }, []);
+
+  const resetVisibleCount = useCallback(() => {
+    setVisibleCount(7);
   }, []);
 
   return {
@@ -149,9 +177,9 @@ const useSearch = ({ handleSearch, onAddRecentSearch } = {}) => {
     handleFilterChange,
     handleResultClick,
     handlePopularGenreClick,
-    handleSearch,
     loadMoreResults,
     resetSearch,
+    resetVisibleCount,
     debouncedSearch,
   };
 };

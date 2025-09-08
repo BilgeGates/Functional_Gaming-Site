@@ -7,6 +7,7 @@ import {
   formatDate,
   formatTimeAgo,
   formatReleaseDate,
+  genres,
 } from "../utils";
 
 const useGameData = () => {
@@ -19,19 +20,6 @@ const useGameData = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [error, setError] = useState("");
-
-  const [genres] = useState([
-    { id: "4", name: "Action" },
-    { id: "3", name: "Adventure" },
-    { id: "5", name: "RPG" },
-    { id: "10", name: "Strategy" },
-    { id: "2", name: "Shooter" },
-    { id: "40", name: "Casual" },
-    { id: "14", name: "Simulation" },
-    { id: "7", name: "Puzzle" },
-    { id: "11", name: "Arcade" },
-    { id: "83", name: "Platformer" },
-  ]);
 
   useEffect(() => {
     setLoading(true);
@@ -98,7 +86,6 @@ const useGameData = () => {
     clearSearch,
 
     // Date formatting
-
     formatDate,
     formatTimeAgo,
     formatReleaseDate,
