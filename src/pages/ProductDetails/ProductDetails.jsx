@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Star,
@@ -9,14 +9,15 @@ import {
   User,
   Building,
   Globe,
-  Target,
-  Monitor,
   Tag,
   BookOpen,
   Info,
   Gamepad2,
   ChevronRight,
   Award,
+  Shuffle,
+  Layers,
+  Puzzle,
 } from "lucide-react";
 
 import Navbar from "../../layout/Navbar/Navbar";
@@ -25,15 +26,14 @@ import Footer from "../../layout/Footer/Footer";
 import useGameData from "../../hooks/useGameData";
 import {
   formatReleaseDate,
-  formatRatingScore,
   formatReviewsCount,
   getMetacriticColor,
   getAgeRating,
   getGenreIcon,
   getPlatformIcon,
-  generateGamePlaceholder,
+  // generateGamePlaceholder,
   formatPlaytime,
-  getRatingGradient,
+  getRatingColor,
 } from "../../utils";
 
 import { useDocumentTitle } from "../../hooks";
@@ -119,11 +119,9 @@ const ProductDetails = () => {
   const publishers = game.publishers || [];
   const developers = game.developers || [];
   const tags = game.tags?.slice(0, 12) || [];
-
-  const ratingScore = formatRatingScore(game.rating);
-  const ageRating = getAgeRating(game.esrb_rating);
-  const formattedReviewsCount = formatReviewsCount(game.reviews_count);
-  const ratingGradient = getRatingGradient(game.rating);
+  const ratingColor = getRatingColor(game.rating) || [];
+  const ageRating = getAgeRating(game.esrb_rating) || [];
+  const formattedReviewsCount = formatReviewsCount(game.reviews_count) || [];
 
   return (
     <>
@@ -134,7 +132,9 @@ const ProductDetails = () => {
           className="relative h-screen bg-cover bg-center bg-fixed"
           style={{
             backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url(${
-              game.background_image || generateGamePlaceholder(game.name)
+              game.background_image
+
+              // || generateGamePlaceholder(game.name)
             })`,
           }}
         >
@@ -195,8 +195,10 @@ const ProductDetails = () => {
                     <div className="relative flex-shrink-0">
                       <img
                         src={
-                          game.background_image ||
-                          generateGamePlaceholder(game.name)
+                          game.background_image
+
+                          // ||
+                          // generateGamePlaceholder(game.name)
                         }
                         alt={game.name}
                         className="w-full lg:w-80 h-64 lg:h-96 object-cover rounded-2xl shadow-xl ring-4 ring-gray-700/50"
@@ -216,13 +218,13 @@ const ProductDetails = () => {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                           <div>
                             <div
-                              className={`text-2xl font-bold bg-gradient-to-r ${ratingGradient} bg-clip-text text-transparent`}
+                              className={`text-2xl font-bold bg-gradient-to-r 
+                                      ${ratingColor}                    
+                                bg-clip-text text-transparent`}
                             >
-                              {ratingScore}
+                              {game.rating ? game.rating.toFixed(1) : 0}
                             </div>
-                            <div className="text-sm text-gray-400">
-                              User Score
-                            </div>
+                            <div className="text-sm text-gray-400">Rating</div>
                           </div>
                           <div>
                             <div
@@ -232,7 +234,7 @@ const ProductDetails = () => {
                                   : "text-gray-400"
                               }`}
                             >
-                              {game.metacritic || "N/A"}
+                              {game.metacritic || []}
                             </div>
                             <div className="text-sm text-gray-400">
                               Metacritic
@@ -246,7 +248,7 @@ const ProductDetails = () => {
                           </div>
                           <div>
                             <div className="text-2xl font-bold text-green-400">
-                              {game.playtime || 0}h
+                              {game.playtime || []}h
                             </div>
                             <div className="text-sm text-gray-400">
                               Playtime
@@ -292,7 +294,7 @@ const ProductDetails = () => {
                   {genres.length > 0 && (
                     <div className="mt-8">
                       <h3 className="flex items-center gap-2 text-xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                        <Tag className="w-6 h-6 text-blue-400" />
+                        <Puzzle className="w-6 h-6 text-blue-400" />
                         Genres
                       </h3>
                       <div className="flex flex-wrap gap-3">
@@ -322,23 +324,19 @@ const ProductDetails = () => {
                   {platforms.length > 0 && (
                     <div className="mt-6">
                       <h3 className="flex items-center gap-2 text-xl font-bold mb-4 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-                        <Monitor className="w-6 h-6 text-green-400" />
-                        Available Platforms
+                        <Layers className="w-6 h-6 text-green-400" />
+                        Platforms
                       </h3>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="flex gap-4">
                         {platforms.slice(0, 8).map((platform) => {
                           const PlatformIcon = getPlatformIcon(
                             platform.platform.name
                           );
                           return (
-                            <div
-                              key={platform.platform.id}
-                              className="flex items-center gap-2 bg-gradient-to-r from-gray-700/50 to-gray-800/50 backdrop-blur-sm text-gray-300 text-sm rounded-lg px-3 py-2 border border-gray-600/30 hover:border-blue-500/50 transition-all duration-300"
-                            >
+                            <div key={platform.platform.id}>
                               {PlatformIcon && (
-                                <PlatformIcon className="w-4 h-4" />
+                                <PlatformIcon className="w-6 h-6" />
                               )}
-                              {platform.platform.name}
                             </div>
                           );
                         })}
@@ -351,7 +349,7 @@ const ProductDetails = () => {
                     <div className="mt-6">
                       <h3 className="flex items-center gap-2 text-xl font-bold mb-4 bg-gradient-to-r from-pink-400 to-orange-400 bg-clip-text text-transparent">
                         <Tag className="w-6 h-6 text-pink-400" />
-                        Game Tags
+                        Tags
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         {tags.map((tag) => (
@@ -372,7 +370,7 @@ const ProductDetails = () => {
                   <div className="bg-gradient-to-br from-slate-800/90 via-gray-800/90 to-zinc-800/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-gray-700/30">
                     <h3 className="flex items-center gap-2 text-2xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                       <BookOpen className="w-8 h-8 text-blue-400" />
-                      About This Game
+                      About Game
                     </h3>
                     <div
                       className={`text-gray-300 leading-relaxed text-lg ${
@@ -453,7 +451,7 @@ const ProductDetails = () => {
                 {similarGames.length > 0 && (
                   <div className="bg-gradient-to-br from-slate-800/90 via-gray-800/90 to-zinc-800/90 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-gray-700/30">
                     <h3 className="flex items-center gap-2 text-xl font-bold mb-6 bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
-                      <Target className="w-6 h-6 text-green-400" />
+                      <Shuffle className="w-6 h-6 text-green-400" />
                       Similar Games
                     </h3>
                     <div className="space-y-4">
@@ -465,8 +463,10 @@ const ProductDetails = () => {
                         >
                           <img
                             src={
-                              similarGame.background_image ||
-                              generateGamePlaceholder(similarGame.name)
+                              similarGame.background_image
+
+                              // ||
+                              // generateGamePlaceholder(similarGame.name)
                             }
                             alt={similarGame.name}
                             className="w-16 h-12 object-cover rounded-lg flex-shrink-0 group-hover:scale-105 transition-transform duration-300"
@@ -478,10 +478,11 @@ const ProductDetails = () => {
                             <div className="flex items-center gap-2 mt-1">
                               <span className="inline-flex items-center gap-1 text-xs text-yellow-400">
                                 <Star className="w-3 h-3 fill-current" />
-                                {formatRatingScore(similarGame.rating || 0)}
+                                {game.rating ? game.rating.toFixed(1) : 0}
                               </span>
                               {similarGame.released && (
-                                <span className="text-xs text-gray-400">
+                                <span className="inline-flex items-center gap-1 text-xs text-gray-400">
+                                  <Calendar className="w-3 h-3" />
                                   {new Date(similarGame.released).getFullYear()}
                                 </span>
                               )}
