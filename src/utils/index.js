@@ -22,16 +22,12 @@ export {
 // Format & display utilities
 export {
   formatReviewsCount,
-  formatRatingScore,
   formatPlaytime,
   capitalize,
   sanitizeGenreName,
   getMetacriticColor,
   getRatingColor,
-  getRatingGradient,
-  getGenreGradient,
   getAgeRating,
-  generateGamePlaceholder,
 } from "./formatUtils";
 
 // Safe wrappers
