@@ -53,7 +53,6 @@ const SearchBar = ({
     handleClearSearch,
     handleFilterChange,
     handleResultClick,
-    resetVisibleCount,
   } = useSearch({ handleSearch });
 
   // External props override internal state if provided
@@ -507,15 +506,6 @@ const SearchBar = ({
           </div>
         )}
 
-        {/* Debug Info - Bu hissəni production-da silin */}
-        {process.env.NODE_ENV === "development" && shouldShowSearchResults && (
-          <div className="p-2 bg-yellow-100 text-xs text-gray-700 border-t">
-            Debug: Results={searchResults?.length || 0}, Term="
-            {currentSearchTerm}", Genre="{currentSelectedGenre}", Show=
-            {currentShowResults ? "true" : "false"}
-          </div>
-        )}
-
         {/* Load More Indicator */}
         {loadingMore && (
           <div className="absolute bottom-0 left-0 right-0 bg-white bg-opacity-90 flex justify-center items-center p-3 rounded-b-xl pointer-events-none">
@@ -528,13 +518,6 @@ const SearchBar = ({
           </div>
         )}
       </div>
-
-      {/* Global CSS for hiding webkit scrollbar */}
-      <style jsx>{`
-        .bg-white.bg-opacity-95::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   );
 };

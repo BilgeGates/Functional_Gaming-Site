@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 
 import {
   Clock,
@@ -72,7 +72,7 @@ const SearchGameItem = ({
       key={`${isRecent ? "recent" : isPopular ? "popular" : "search"}-${
         game.id
       }-${index}`}
-      className={`flex items-center gap-2 sm:gap-4 p-2 sm:p-3 rounded-lg cursor-pointer transition-all duration-200 ease-in-out group opacity-0 animate-fadeIn hover:shadow-md ${
+      className={`flex items-center gap-2 sm:gap-4 p-2 sm:p-3 rounded-lg cursor-pointer transition-all duration-200 ease-in-out group animate-fadeIn hover:shadow-md ${
         selectedResultIndex === index
           ? "bg-purple-100 transform scale-102"
           : "hover:bg-gray-50"
