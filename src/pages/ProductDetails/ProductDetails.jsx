@@ -31,7 +31,6 @@ import {
   getAgeRating,
   getGenreIcon,
   getPlatformIcon,
-  // generateGamePlaceholder,
   formatPlaytime,
   getRatingColor,
 } from "../../utils";
@@ -131,11 +130,7 @@ const ProductDetails = () => {
         <div
           className="relative h-screen bg-cover bg-center bg-fixed"
           style={{
-            backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url(${
-              game.background_image
-
-              // || generateGamePlaceholder(game.name)
-            })`,
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url(${game.background_image})`,
           }}
         >
           {/* Animated Background Elements */}
@@ -194,12 +189,7 @@ const ProductDetails = () => {
                     {/* Game Image */}
                     <div className="relative flex-shrink-0">
                       <img
-                        src={
-                          game.background_image
-
-                          // ||
-                          // generateGamePlaceholder(game.name)
-                        }
+                        src={game.background_image}
                         alt={game.name}
                         className="w-full lg:w-80 h-64 lg:h-96 object-cover rounded-2xl shadow-xl ring-4 ring-gray-700/50"
                       />
