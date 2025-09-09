@@ -22,11 +22,6 @@ export const formatReviewsCount = (count) => {
 };
 
 /**
- * Format average rating into a percentage (0–100 scale)
- */
-export const formatRatingScore = (rating) => Math.round(rating * 20);
-
-/**
  * Format playtime hours or return "N/A" if missing
  */
 export const formatPlaytime = (hours) => (hours ? `${hours} hours` : "N/A");
@@ -55,44 +50,16 @@ export const sanitizeGenreName = (genre) =>
  * Get background color class based on Metacritic score
  */
 export const getMetacriticColor = (score) => {
-  if (score >= 80) return "text-green-600";
-  if (score >= 60) return "text-yellow-600";
-  return "text-red-600";
-};
-
-/**
- * Get text color class based on user rating score
- */
-export const getRatingColor = (rating) => {
-  const score = rating * 20;
   if (score >= 80) return "text-green-400";
   if (score >= 60) return "text-yellow-400";
   return "text-red-400";
 };
 
 /**
- * Get gradient background color class based on rating score
+ * Get text color class based on user rating score
  */
-export const getRatingGradient = (rating) => {
-  const score = rating * 20;
-  if (score >= 90) return "from-emerald-500 to-green-600";
-  if (score >= 80) return "from-green-500 to-emerald-600";
-  if (score >= 70) return "from-yellow-500 to-orange-500";
-  if (score >= 60) return "from-orange-500 to-red-500";
-  return "from-red-500 to-red-700";
-};
-
-/**
- * =============================
- * Genre & Category Utilities
- * =============================
- */
-
-/**
- * Get gradient background for a given genre
- */
-export const getGenreGradient = () => {
-  return "from-purple-500 to-pink-500"; // hamısı eyni rəngdə olacaq
+export const getRatingColor = () => {
+  return "text-yellow-400";
 };
 
 /**
@@ -128,32 +95,4 @@ export const getAgeRating = (esrbRating) => {
       description: "Not Rated",
     }
   );
-};
-
-/**
- * =============================
- * Placeholder Utilities
- * =============================
- */
-
-/**
- * Generate a placeholder image for games without cover art
- */
-export const generateGamePlaceholder = (gameName) => {
-  const colors = [
-    "from-purple-600 to-blue-600",
-    "from-green-500 to-teal-600",
-    "from-red-500 to-pink-600",
-    "from-yellow-500 to-orange-600",
-    "from-indigo-500 to-purple-600",
-  ];
-
-  const randomIndex = Math.floor(Math.random() * colors.length);
-  const randomColor = colors[randomIndex];
-
-  console.log(randomColor);
-
-  return `https://via.placeholder.com/400x225/6366f1/ffffff?text=${encodeURIComponent(
-    gameName || "Game"
-  )}`;
 };
