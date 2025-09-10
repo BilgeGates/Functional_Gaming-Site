@@ -46,7 +46,7 @@ const TrendingSection = () => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const visibleGames = Array.isArray(allGames)
-    ? [...allGames].sort((a, b) => (b.added || 0) - (a.added || 0)).slice(0, 12)
+    ? [...allGames].sort((a, b) => (b.added || 0) - (a.added || 0)).slice(0, 24)
     : [];
 
   useEffect(() => {
