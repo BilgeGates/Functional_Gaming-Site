@@ -4,6 +4,8 @@ import SearchGameItem from "./SearchGameItem";
 
 import { useSearch, useSearchKeyboard } from "../../hooks";
 
+import { GenreBadge, ExploreButton } from "../ui";
+
 import { Search, X, Filter } from "lucide-react";
 
 const SearchBar = ({
@@ -28,6 +30,7 @@ const SearchBar = ({
   isGameFavorited,
   formatDate,
   genres,
+  onViewAllResults,
 }) => {
   const searchRef = useRef(null);
 
@@ -75,6 +78,9 @@ const SearchBar = ({
 
   const safeGenres = Array.isArray(genres) ? genres : [];
   const displayGenres = safeGenres.slice(0, 5);
+
+  const displayResultsCount = 5;
+  const hasMoreResults = searchResults.length > displayResultsCount;
 
   // Keyboard navigation
   useSearchKeyboard({
@@ -204,6 +210,27 @@ const SearchBar = ({
     ]
   );
 
+  // View All Results handler
+  const handleViewAllResults = useCallback(() => {
+    if (onViewAllResults) {
+      onViewAllResults({
+        searchTerm: currentSearchTerm,
+        selectedGenre: currentSelectedGenre,
+        sortBy: currentSortBy,
+        totalResults: searchResults.length,
+      });
+    }
+    // Axtarış dropdown-unu bağla
+    setCurrentShowResults(false);
+  }, [
+    onViewAllResults,
+    currentSearchTerm,
+    currentSelectedGenre,
+    currentSortBy,
+    searchResults.length,
+    setCurrentShowResults,
+  ]);
+
   const onResultsScroll = useCallback(
     (e) => {
       const target = e.target;
@@ -211,9 +238,13 @@ const SearchBar = ({
       if (
         !loadingMore &&
         target.scrollTop + target.clientHeight >= target.scrollHeight - 20 &&
-        visibleCount < searchResults.length
+        // eslint-disable-next-line no-undef
+        visibleCount < (limitResults ? 5 : searchResults.length)
       ) {
-        setVisibleCount((v) => Math.min(v + 7, searchResults.length));
+        setVisibleCount((v) =>
+          // eslint-disable-next-line no-undef
+          Math.min(v + 7, limitResults ? 5 : searchResults.length)
+        );
       }
     },
     [loadingMore, visibleCount, searchResults.length, setVisibleCount]
@@ -313,16 +344,14 @@ const SearchBar = ({
             <button
               key={genre.id}
               onClick={() => onPopularGenreClick(genre)}
-              className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ease-in-out transform hover:scale-105 border backdrop-blur-sm ${
+              className={`bg-transparent rounded-lg transition-all duration-200 ease-in-out transform hover:scale-102  ${
                 currentSelectedGenre === genre.id
                   ? "bg-white bg-opacity-20 text-white border-white border-opacity-40 shadow-lg"
                   : "bg-white bg-opacity-10 text-white border-white border-opacity-20 hover:bg-opacity-15 hover:border-opacity-30 shadow-md"
               }`}
-              style={{ backdropFilter: "blur(10px)" }}
               aria-pressed={currentSelectedGenre === genre.id}
             >
-              <span className="mr-1 sm:mr-2 text-cyan-400">#</span>
-              {genre.name}
+              <GenreBadge genre={genre} />
             </button>
           ))}
         </div>
@@ -425,21 +454,18 @@ const SearchBar = ({
 
       {/* Search Results Dropdown */}
       <div
-        className={`absolute top-full left-0 right-0 mt-1 mx-2 sm:mx-0 rounded-xl shadow-2xl overflow-y-auto border z-[9999]
+        className={`absolute top-full left-0 right-0 mt-1 mx-2 sm:mx-0 rounded-tl-xl rounded-bl-xl rounded-tr-md rounded-br-md shadow-2xl border z-[9999]
           bg-white bg-opacity-95 backdrop-blur-md
           transition-all duration-300 ease-in-out
           ${
             shouldShowSearchResults && hasAnyResults
-              ? "opacity-100 max-h-80 sm:max-h-96 pointer-events-auto"
+              ? "opacity-100 pointer-events-auto"
               : "opacity-0 max-h-0 pointer-events-none"
           }`}
         style={{
           borderColor: "rgba(255, 255, 255, 0.2)",
           zIndex: "9999",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
         }}
-        onScroll={onResultsScroll}
       >
         {/* Loading State */}
         {isSearching && (
@@ -455,35 +481,52 @@ const SearchBar = ({
 
         {/* Search Results */}
         {shouldShowSearchResults && hasAnyResults && (
-          <div className="p-3 sm:p-4">
-            <h3 className="text-gray-800 font-semibold mb-3 flex items-center gap-2 text-sm sm:text-base">
-              <Search size={14} />
-              {searchResults.length} games found
-              {currentSelectedGenre && (
-                <span className="text-xs text-gray-600 ml-2">
-                  in{" "}
-                  {safeGenres.find((g) => g.id === currentSelectedGenre)
-                    ?.name || "selected genre"}
-                </span>
-              )}
-            </h3>
-            <div className="space-y-1">
-              {searchResults.slice(0, visibleCount).map((game, index) => (
-                <SearchGameItem
-                  key={`search-${game.id}-${index}`}
-                  game={game}
-                  index={index}
-                  selectedResultIndex={selectedResultIndex}
-                  onResultClick={onResultClick}
-                  onFavoriteToggle={handleFavoriteToggle}
-                  onRatingClick={openRatingModal}
-                  getRatingColor={getRatingColor}
-                  getUserRating={getUserRating}
-                  isGameFavorited={isGameFavorited}
-                  formatDate={formatDate}
-                />
-              ))}
+          <div className="flex flex-col h-full">
+            {/* Results Header */}
+            <div className="p-3 sm:p-4 flex-shrink-0">
+              <h3 className="text-gray-800 font-semibold mb-3 flex items-center gap-2 text-sm sm:text-base">
+                <Search size={14} />
+                {searchResults.length} result found
+              </h3>
             </div>
+
+            {/* Results List */}
+            <div
+              className="flex-1 overflow-y-auto px-3 sm:px-4"
+              onScroll={onResultsScroll}
+            >
+              <div className="space-y-1">
+                {searchResults
+                  .slice(0, displayResultsCount)
+                  .map((game, index) => (
+                    <SearchGameItem
+                      key={`search-${game.id}-${index}`}
+                      game={game}
+                      index={index}
+                      selectedResultIndex={selectedResultIndex}
+                      onResultClick={onResultClick}
+                      onFavoriteToggle={handleFavoriteToggle}
+                      onRatingClick={openRatingModal}
+                      getRatingColor={getRatingColor}
+                      getUserRating={getUserRating}
+                      isGameFavorited={isGameFavorited}
+                      formatDate={formatDate}
+                    />
+                  ))}
+              </div>
+            </div>
+
+            {/* View All Results Button */}
+            {hasMoreResults && onViewAllResults && (
+              <div className="flex-shrink-0 p-3 sm:p-4 border-t border-gray-200">
+                <ExploreButton
+                  variant="cardButton"
+                  onClick={handleViewAllResults}
+                >
+                  Show {searchResults.length} Results
+                </ExploreButton>
+              </div>
+            )}
           </div>
         )}
 
