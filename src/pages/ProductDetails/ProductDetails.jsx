@@ -3,9 +3,7 @@ import { useParams } from "react-router-dom";
 import {
   Star,
   Calendar,
-  Clock,
   ExternalLink,
-  ArrowLeft,
   User,
   Building,
   Globe,
@@ -23,7 +21,8 @@ import {
 import Navbar from "../../layout/Navbar/Navbar";
 import Footer from "../../layout/Footer/Footer";
 
-import useGameData from "../../hooks/useGameData";
+import { useDocumentTitle, useGameData } from "../../hooks";
+
 import {
   formatReleaseDate,
   formatReviewsCount,
@@ -31,11 +30,10 @@ import {
   getAgeRating,
   getGenreIcon,
   getPlatformIcon,
-  formatPlaytime,
   getRatingColor,
 } from "../../utils";
 
-import { useDocumentTitle } from "../../hooks";
+import { ErrorMessage } from "../../components/ui/ErrorMessage";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -89,28 +87,7 @@ const ProductDetails = () => {
   }
 
   if (error || !game) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-zinc-900 flex flex-col items-center justify-center text-white px-4">
-        <div className="text-center max-w-lg">
-          <div className="flex justify-center mb-6">
-            <Gamepad2 className="w-24 h-24 text-red-400" />
-          </div>
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-red-400 to-pink-500 bg-clip-text text-transparent mb-4">
-            Game Not Found
-          </h2>
-          <p className="text-gray-300 text-lg mb-8">
-            {error || "The requested game could not be found"}
-          </p>
-          <a
-            href="/products"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white font-bold rounded-xl hover:from-blue-700 hover:via-purple-700 hover:to-blue-900 transform hover:-translate-y-2 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/25"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back to Game Library
-          </a>
-        </div>
-      </div>
-    );
+    return <ErrorMessage type="notfound" message="This game does not exist!" />;
   }
 
   const genres = game.genres || [];
@@ -133,18 +110,10 @@ const ProductDetails = () => {
             backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url(${game.background_image})`,
           }}
         >
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 left-20 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-            <div className="absolute top-40 right-32 w-1 h-1 bg-purple-400 rounded-full animate-ping"></div>
-            <div className="absolute bottom-40 left-1/4 w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce"></div>
-            <div className="absolute bottom-20 right-20 w-1 h-1 bg-pink-400 rounded-full animate-pulse"></div>
-          </div>
-
           <div className="relative z-10 h-full flex items-end">
             <div className="w-full max-w-7xl mx-auto px-6 pb-20">
               {/* Breadcrumb */}
-              <nav className="mb-12 flex items-center">
+              <nav className="mb-24 flex items-center">
                 <a
                   href="/products"
                   className="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-all duration-300 hover:underline underline-offset-4"
@@ -157,22 +126,6 @@ const ProductDetails = () => {
                   {game.name}
                 </span>
               </nav>
-
-              {/* Game Stats */}
-              <div className="flex flex-wrap items-center gap-6 text-lg">
-                {game.released && (
-                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-800/80 to-gray-900/80 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-700/50">
-                    <Calendar className="w-5 h-5" />
-                    {formatReleaseDate(game.released)}
-                  </div>
-                )}
-                {game.playtime > 0 && (
-                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-800/80 to-gray-900/80 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-700/50">
-                    <Clock className="w-5 h-5" />
-                    {formatPlaytime(game.playtime)}
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         </div>

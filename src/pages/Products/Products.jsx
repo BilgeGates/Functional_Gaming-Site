@@ -23,6 +23,8 @@ import {
   useLogic,
 } from "../../hooks";
 
+import { genres } from "../../utils";
+
 // UI components
 import { ErrorMessage, LoadingSpinner } from "../../components/ui";
 
@@ -168,6 +170,7 @@ const Products = () => {
             isGameFavorited={isGameFavorited}
             formatDate={formatReleaseDate}
             recentSearches={[]}
+            genres={genres}
           />
           <Controls
             sortBy={sortBy}
