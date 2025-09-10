@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import SearchBar from "../../../components/common/SearchBar";
 
@@ -12,7 +13,6 @@ const heroImages = [
 ];
 
 const HeroSection = ({
-  allGames,
   loading,
   stats,
   handleGameSelect,
@@ -37,6 +37,8 @@ const HeroSection = ({
   isGameFavorited,
   formatDate,
 }) => {
+  const navigate = useNavigate();
+
   // Tracks which hero image is currently shown
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -64,6 +66,18 @@ const HeroSection = ({
 
     return () => clearInterval(interval);
   }, []);
+
+  // View All Results handler
+  const handleViewAllResults = (searchData) => {
+    navigate("/products", {
+      state: {
+        searchTerm: searchData.searchTerm,
+        selectedGenre: searchData.selectedGenre,
+        sortBy: searchData.sortBy,
+        totalResults: searchData.totalResults,
+      },
+    });
+  };
 
   return (
     <header className="relative z-10 pt-20">
@@ -140,6 +154,8 @@ const HeroSection = ({
                 openRatingModal={openRatingModal}
                 recentSearches={recentSearches}
                 onAddRecentSearch={handleAddRecentSearch}
+                onViewAllResults={handleViewAllResults}
+                limitResults={true}
               />
 
               {/* Game statistics (clickable shortcuts) */}

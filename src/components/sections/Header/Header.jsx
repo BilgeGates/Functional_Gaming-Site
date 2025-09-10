@@ -82,11 +82,7 @@ const Header = () => {
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-10 left-10 w-20 h-20 bg-pink-500 rounded-full animate-pulse"></div>
         <div className="absolute top-32 right-20 w-16 h-16 bg-cyan-500 rounded-full animate-bounce"></div>
-        <div
-          className="absolute bottom-32 left-32 w-24 h-24 bg-yellow-500 rounded-full opacity-75"
-          style={{ animation: "ping 2s cubic-bezier(0, 0, 0.2, 1) infinite" }}
-        ></div>
-        <div className="absolute bottom-10 right-10 w-12 h-12 bg-green-500 rounded-full animate-spin"></div>
+        <div className="absolute bottom-10 right-10 w-12 h-12 bg-green-500 rounded-full animate-glow"></div>
       </div>
 
       <RatingModal
