@@ -67,7 +67,7 @@ const About = () => {
   ];
 
   const stats = [
-    { number: "800", label: "Games in Database", icon: Gamepad2 },
+    { number: "1000", label: "Games in Database", icon: Gamepad2 },
     { number: "0", label: "Active Users", icon: Users },
     { number: "0", label: "Reviews & Ratings", icon: Star },
     { number: "9 hours", label: "Uptime", icon: TrendingUp },
@@ -117,7 +117,7 @@ const About = () => {
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         {/* Hero Section */}
-        <section className="relative pt-32 pb-20 px-6 overflow-hidden">
+        <section className="relative h-[100vh] flex items-center justify-center">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 via-cyan-600/10 to-transparent"></div>
           <div className="container mx-auto relative z-10">
             <div className="text-center max-w-4xl mx-auto">
@@ -138,7 +138,7 @@ const About = () => {
               <p className="text-xl md:text-2xl text-white/80 mb-8 leading-relaxed max-w-3xl mx-auto">
                 We're passionate gamers building the world's most comprehensive
                 gaming discovery platform. Find your next favorite game from our
-                curated collection of 40 titles.
+                curated collection of 1000 titles.
               </p>
 
               <ExploreButton variant="sectionButton">
