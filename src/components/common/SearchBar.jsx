@@ -82,11 +82,74 @@ const SearchBar = ({
   const displayResultsCount = 5;
   const hasMoreResults = searchResults.length > displayResultsCount;
 
+  // Sort results function - proper sorting logic
+  const sortSearchResults = useCallback((results, sortType) => {
+    if (!results || !Array.isArray(results)) return [];
+
+    const sortedResults = [...results];
+
+    switch (sortType) {
+      case "rating":
+        return sortedResults.sort((a, b) => {
+          const ratingA = parseFloat(a.rating) || 0;
+          const ratingB = parseFloat(b.rating) || 0;
+          return ratingB - ratingA; // Highest rating first
+        });
+
+      case "metacritic":
+        return sortedResults.sort((a, b) => {
+          const metacriticA = parseInt(a.metacritic) || 0;
+          const metacriticB = parseInt(b.metacritic) || 0;
+          return metacriticB - metacriticA; // Highest metacritic first
+        });
+
+      case "released":
+        return sortedResults.sort((a, b) => {
+          const dateA = new Date(a.released || 0);
+          const dateB = new Date(b.released || 0);
+          return dateB - dateA; // Newest first
+        });
+
+      case "name_asc":
+        return sortedResults.sort((a, b) => {
+          const nameA = (a.name || "").toLowerCase();
+          const nameB = (b.name || "").toLowerCase();
+          return nameA.localeCompare(nameB); // A to Z
+        });
+
+      case "name_desc":
+        return sortedResults.sort((a, b) => {
+          const nameA = (a.name || "").toLowerCase();
+          const nameB = (b.name || "").toLowerCase();
+          return nameB.localeCompare(nameA); // Z to A
+        });
+
+      case "popularity":
+        return sortedResults.sort((a, b) => {
+          const popularityA = parseInt(
+            a.suggestions_count || a.reviews_count || 0
+          );
+          const popularityB = parseInt(
+            b.suggestions_count || b.reviews_count || 0
+          );
+          return popularityB - popularityA; // Most popular first
+        });
+
+      case "relevance":
+      default:
+        // Keep original order for relevance or default case
+        return sortedResults;
+    }
+  }, []);
+
+  // Get sorted results
+  const sortedResults = sortSearchResults(searchResults, currentSortBy);
+
   // Keyboard navigation
   useSearchKeyboard({
     searchRef,
     showResults: currentShowResults,
-    searchResults,
+    searchResults: sortedResults,
     selectedResultIndex,
     setSelectedResultIndex,
     visibleCount,
@@ -217,17 +280,17 @@ const SearchBar = ({
         searchTerm: currentSearchTerm,
         selectedGenre: currentSelectedGenre,
         sortBy: currentSortBy,
-        totalResults: searchResults.length,
+        totalResults: sortedResults.length,
       });
     }
-    // Axtarış dropdown-unu bağla
+    // Close search dropdown
     setCurrentShowResults(false);
   }, [
     onViewAllResults,
     currentSearchTerm,
     currentSelectedGenre,
     currentSortBy,
-    searchResults.length,
+    sortedResults.length,
     setCurrentShowResults,
   ]);
 
@@ -239,15 +302,15 @@ const SearchBar = ({
         !loadingMore &&
         target.scrollTop + target.clientHeight >= target.scrollHeight - 20 &&
         // eslint-disable-next-line no-undef
-        visibleCount < (limitResults ? 5 : searchResults.length)
+        visibleCount < (limitResults ? 5 : sortedResults.length)
       ) {
         setVisibleCount((v) =>
           // eslint-disable-next-line no-undef
-          Math.min(v + 7, limitResults ? 5 : searchResults.length)
+          Math.min(v + 7, limitResults ? 5 : sortedResults.length)
         );
       }
     },
-    [loadingMore, visibleCount, searchResults.length, setVisibleCount]
+    [loadingMore, visibleCount, sortedResults.length, setVisibleCount]
   );
 
   const handleFavoriteToggle = useCallback(
@@ -286,7 +349,7 @@ const SearchBar = ({
     currentShowResults &&
     (currentSearchTerm.trim() || currentSelectedGenre);
 
-  const hasAnyResults = searchResults.length > 0;
+  const hasAnyResults = sortedResults.length > 0;
 
   return (
     <div className="relative w-full" ref={searchRef}>
@@ -420,30 +483,42 @@ const SearchBar = ({
                 >
                   <option
                     className="bg-gray-900 text-gray-200"
-                    value="popularity"
-                  >
-                    Popularity
-                  </option>
-                  <option
-                    className="bg-gray-900 text-gray-200"
                     value="relevance"
                   >
                     Relevance
                   </option>
-                  <option className="bg-gray-900 text-gray-200" value="rating">
-                    Rating
-                  </option>
                   <option
                     className="bg-gray-900 text-gray-200"
-                    value="released"
+                    value="popularity"
                   >
-                    Release Date
+                    Popularity
+                  </option>
+                  <option className="bg-gray-900 text-gray-200" value="rating">
+                    Highest Rating
                   </option>
                   <option
                     className="bg-gray-900 text-gray-200"
                     value="metacritic"
                   >
                     Metacritic Score
+                  </option>
+                  <option
+                    className="bg-gray-900 text-gray-200"
+                    value="released"
+                  >
+                    Release Date (Newest)
+                  </option>
+                  <option
+                    className="bg-gray-900 text-gray-200"
+                    value="name_asc"
+                  >
+                    Name (A-Z)
+                  </option>
+                  <option
+                    className="bg-gray-900 text-gray-200"
+                    value="name_desc"
+                  >
+                    Name (Z-A)
                   </option>
                 </select>
               </div>
@@ -486,7 +561,8 @@ const SearchBar = ({
             <div className="p-3 sm:p-4 flex-shrink-0">
               <h3 className="text-gray-800 font-semibold mb-3 flex items-center gap-2 text-sm sm:text-base">
                 <Search size={14} />
-                {searchResults.length} result found
+                {sortedResults.length} result
+                {sortedResults.length !== 1 ? "s" : ""} found
               </h3>
             </div>
 
@@ -496,7 +572,7 @@ const SearchBar = ({
               onScroll={onResultsScroll}
             >
               <div className="space-y-1">
-                {searchResults
+                {sortedResults
                   .slice(0, displayResultsCount)
                   .map((game, index) => (
                     <SearchGameItem
