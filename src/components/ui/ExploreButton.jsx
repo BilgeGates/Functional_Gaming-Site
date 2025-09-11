@@ -6,7 +6,7 @@ const styles = {
   sectionButton:
     "group relative inline-flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-sky-400 hover:from-indigo-600 hover:to-sky-500 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-102",
   cardButton:
-    "w-full mt-4 bg-gradient-to-r from-indigo-500 to-sky-400 hover:from-indigo-600 hover:to-sky-500 text-white font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2",
+    "w-full mt-4 bg-gradient-to-r from-indigo-500 to-sky-400 hover:from-indigo-600 hover:to-sky-500 text-white font-semibold py-3 rounded-xl transition-all duration-300 transform flex items-center justify-center gap-2 hover:scale-1025",
 };
 
 export const ExploreButton = ({
