@@ -31,6 +31,7 @@ const SearchBar = ({
   formatDate,
   genres,
   onViewAllResults,
+  showGenreTags = true, // New prop to control genre tags visibility
 }) => {
   const searchRef = useRef(null);
 
@@ -401,23 +402,25 @@ const SearchBar = ({
           </button>
         </div>
 
-        {/* Genre Tags */}
-        <div className="flex flex-wrap gap-1.5 sm:gap-2">
-          {displayGenres.map((genre) => (
-            <button
-              key={genre.id}
-              onClick={() => onPopularGenreClick(genre)}
-              className={`bg-transparent rounded-lg transition-all duration-200 ease-in-out transform hover:scale-102  ${
-                currentSelectedGenre === genre.id
-                  ? "bg-white bg-opacity-20 text-white border-white border-opacity-40 shadow-lg"
-                  : "bg-white bg-opacity-10 text-white border-white border-opacity-20 hover:bg-opacity-15 hover:border-opacity-30 shadow-md"
-              }`}
-              aria-pressed={currentSelectedGenre === genre.id}
-            >
-              <GenreBadge genre={genre} />
-            </button>
-          ))}
-        </div>
+        {/* Genre Tags - Only shown if showGenreTags is true */}
+        {showGenreTags && (
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
+            {displayGenres.map((genre) => (
+              <button
+                key={genre.id}
+                onClick={() => onPopularGenreClick(genre)}
+                className={`bg-transparent rounded-lg transition-all duration-200 ease-in-out transform hover:scale-102  ${
+                  currentSelectedGenre === genre.id
+                    ? "bg-white bg-opacity-20 text-white border-white border-opacity-40 shadow-lg"
+                    : "bg-white bg-opacity-10 text-white border-white border-opacity-20 hover:bg-opacity-15 hover:border-opacity-30 shadow-md"
+                }`}
+                aria-pressed={currentSelectedGenre === genre.id}
+              >
+                <GenreBadge genre={genre} />
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Filters Panel */}
         <div
