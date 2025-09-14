@@ -529,7 +529,6 @@ const SearchBar = ({
           </div>
         </div>
       </div>
-
       {/* Search Results Dropdown */}
       <div
         className={`absolute top-full left-0 right-0 mt-1 mx-2 sm:mx-0 rounded-tl-xl rounded-bl-xl rounded-tr-md rounded-br-md shadow-2xl border z-[9999]

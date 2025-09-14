@@ -1,22 +1,6 @@
 import { useEffect, useState } from "react";
+
 import { useParams } from "react-router-dom";
-import {
-  Star,
-  Calendar,
-  ExternalLink,
-  User,
-  Building,
-  Globe,
-  Tag,
-  BookOpen,
-  Info,
-  Gamepad2,
-  ChevronRight,
-  Award,
-  Shuffle,
-  Layers,
-  Puzzle,
-} from "lucide-react";
 
 import Navbar from "../../layout/Navbar/Navbar";
 import Footer from "../../layout/Footer/Footer";
@@ -34,6 +18,24 @@ import {
 } from "../../utils";
 
 import { ErrorMessage } from "../../components/ui/ErrorMessage";
+
+import {
+  Star,
+  Calendar,
+  ExternalLink,
+  User,
+  Building,
+  Globe,
+  Tag,
+  BookOpen,
+  Info,
+  Gamepad2,
+  ChevronRight,
+  Award,
+  Shuffle,
+  Layers,
+  Puzzle,
+} from "lucide-react";
 
 const ProductDetails = () => {
   const { id } = useParams();

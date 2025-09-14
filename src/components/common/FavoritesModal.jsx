@@ -1,4 +1,7 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
+
+import { getRatingColor, formatDate } from "../../utils";
+
 import { Heart, Pin, Trash2, Gamepad2, Star, Calendar, X } from "lucide-react";
 
 const FavoritesModal = ({
@@ -12,8 +15,7 @@ const FavoritesModal = ({
   isGamePinned,
   getUserRating,
   openRatingModal,
-  getRatingColor,
-  formatDate,
+  formatDte, // ❌ likely typo → you can remove or replace with formatDate
 }) => {
   const modalRef = useRef(null);
 
@@ -25,22 +27,28 @@ const FavoritesModal = ({
     };
     if (show) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "hidden"; // prevent background scroll
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = ""; // restore scroll
+    };
   }, [onClose, show]);
 
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-md p-4">
+    <div
+      className="fixed inset-0 z-[9998] flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-md p-4"
+      role="dialog"
+      aria-modal="true"
+    >
       <div
         ref={modalRef}
         className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden mx-4"
       >
-        <div
-          className="bg-gradient-to-r from-red-500 to-rose-500
- text-white p-4 sm:p-6"
-        >
+        {/* Header */}
+        <div className="bg-gradient-to-r from-red-500 to-rose-500 text-white p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
               <Heart className="text-red-200 flex-shrink-0" size={24} />
@@ -63,6 +71,8 @@ const FavoritesModal = ({
             {favorites.length} games
           </span>
         </div>
+
+        {/* Content */}
         <div className="p-4 sm:p-6">
           {favorites.length === 0 ? (
             <div className="text-center py-8 sm:py-12">
@@ -79,122 +89,129 @@ const FavoritesModal = ({
             </div>
           ) : (
             <div className="space-y-3 max-h-[60vh] sm:max-h-96 overflow-y-auto">
-              {getSortedFavorites.map((game) => (
-                <div
-                  key={game.id}
-                  className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl transition-all duration-200 ${
-                    isGamePinned(game.id)
-                      ? "bg-gradient-to-r from-blue-50 to-purple-50 border-l-4 border-blue-400"
-                      : "bg-gray-50 hover:bg-gray-100"
-                  }`}
-                >
-                  {isGamePinned(game.id) && (
-                    <Pin
-                      size={14}
-                      className="text-blue-500 flex-shrink-0"
-                      fill="currentColor"
-                    />
-                  )}
-                  <img
-                    src={
-                      game.background_image ||
-                      "https://via.placeholder.com/80x60?text=No+Image"
-                    }
-                    alt={game.name}
-                    className="w-16 h-10 sm:w-20 sm:h-12 object-cover rounded-lg shadow-sm flex-shrink-0"
-                    onError={(e) => {
-                      e.target.src =
-                        "https://via.placeholder.com/80x60?text=No+Image";
-                    }}
-                  />
+              {getSortedFavorites.map((game) => {
+                const ratingColor = getRatingColor(game.rating) || "";
+                const formattedDate = formatDate(game.released) || "";
+
+                return (
                   <div
-                    className="flex-1 cursor-pointer min-w-0"
-                    onClick={() => handleGameSelect(game)}
-                    tabIndex={0}
-                    role="button"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleGameSelect(game);
-                    }}
+                    key={game.id}
+                    className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl transition-all duration-200 ${
+                      isGamePinned(game.id)
+                        ? "bg-gradient-to-r from-blue-50 to-purple-50 border-l-4 border-blue-400"
+                        : "bg-gray-50 hover:bg-gray-100"
+                    }`}
                   >
-                    <h4 className="font-semibold text-gray-800 hover:text-purple-600 transition-colors text-sm sm:text-base truncate">
-                      {game.name}
-                    </h4>
-                    <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 mt-1 overflow-hidden">
-                      {game.genres && game.genres.length > 0 && (
-                        <span className="flex items-center gap-1 flex-shrink-0">
-                          <Gamepad2 size={10} className="sm:w-3 sm:h-3" />
-                          <span className="truncate">
-                            {game.genres[0].name}
-                          </span>
-                        </span>
-                      )}
-                      {game.rating && (
-                        <span
-                          className={`flex items-center gap-1 flex-shrink-0 ${getRatingColor(
-                            game.rating
-                          )}`}
-                        >
-                          <Star size={10} className="sm:w-3 sm:h-3" />
-                          {game.rating}
-                        </span>
-                      )}
-                      <span className="hidden sm:flex items-center gap-1 flex-shrink-0">
-                        <Calendar size={12} />
-                        {formatDate(game.released)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-                    <button
-                      onClick={(e) => openRatingModal(game, e)}
-                      className="p-1.5 sm:p-2 rounded-full text-gray-400 hover:text-yellow-500 hover:bg-yellow-50 transition-colors"
-                      title="Rate this game"
-                      aria-label={`Rate ${game.name}`}
-                    >
-                      <Star
-                        size={14}
-                        fill={
-                          getUserRating(game.id) > 0 ? "currentColor" : "none"
-                        }
-                        className={
-                          getUserRating(game.id) > 0 ? "text-yellow-500" : ""
-                        }
-                      />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        togglePin(game.id);
-                      }}
-                      className={`p-1.5 sm:p-2 rounded-full transition-colors ${
-                        isGamePinned(game.id)
-                          ? "text-blue-500 bg-blue-50 hover:bg-blue-100"
-                          : "text-gray-400 hover:text-blue-500 hover:bg-blue-50"
-                      }`}
-                      title={
-                        isGamePinned(game.id) ? "Unpin from top" : "Pin to top"
-                      }
-                      aria-pressed={isGamePinned(game.id)}
-                    >
+                    {isGamePinned(game.id) && (
                       <Pin
                         size={14}
-                        fill={isGamePinned(game.id) ? "currentColor" : "none"}
+                        className="text-blue-500 flex-shrink-0"
+                        fill="currentColor"
                       />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(game.id);
+                    )}
+                    <img
+                      src={
+                        game.background_image ||
+                        "https://via.placeholder.com/80x60?text=No+Image"
+                      }
+                      alt={game.name}
+                      className="w-16 h-10 sm:w-20 sm:h-12 object-cover rounded-lg shadow-sm flex-shrink-0"
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          "https://via.placeholder.com/80x60?text=No+Image";
                       }}
-                      className="p-1.5 sm:p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                      title="Remove from favorites"
-                      aria-label={`Remove ${game.name} from favorites`}
+                    />
+                    <div
+                      className="flex-1 cursor-pointer min-w-0"
+                      onClick={() => handleGameSelect(game)}
+                      tabIndex={0}
+                      role="button"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleGameSelect(game);
+                      }}
                     >
-                      <Trash2 size={14} />
-                    </button>
+                      <h4 className="font-semibold text-gray-800 hover:text-purple-600 transition-colors text-sm sm:text-base truncate">
+                        {game.name}
+                      </h4>
+                      <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 mt-1 overflow-hidden">
+                        {game.genres?.length > 0 && (
+                          <span className="flex items-center gap-1 flex-shrink-0">
+                            <Gamepad2 size={10} className="sm:w-3 sm:h-3" />
+                            <span className="truncate">
+                              {game.genres[0].name}
+                            </span>
+                          </span>
+                        )}
+                        <span className="hidden sm:flex items-center gap-1 flex-shrink-0">
+                          <Calendar size={12} />
+                          {formattedDate}
+                        </span>
+                        {game.rating && (
+                          <span
+                            className={`flex items-center gap-1 flex-shrink-0 ${ratingColor}`}
+                          >
+                            <Star size={10} className="sm:w-3 sm:h-3" />
+                            {game.rating.toFixed(1)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                      <button
+                        onClick={(e) => openRatingModal(game, e)}
+                        className="p-1.5 sm:p-2 rounded-full text-gray-400 hover:text-yellow-500 hover:bg-yellow-50 transition-colors"
+                        title="Rate this game"
+                        aria-label={`Rate ${game.name}`}
+                      >
+                        <Star
+                          size={14}
+                          fill={
+                            getUserRating(game.id) > 0 ? "currentColor" : "none"
+                          }
+                          className={
+                            getUserRating(game.id) > 0 ? "text-yellow-400" : ""
+                          }
+                        />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          togglePin(game.id);
+                        }}
+                        className={`p-1.5 sm:p-2 rounded-full transition-colors ${
+                          isGamePinned(game.id)
+                            ? "text-blue-500 bg-blue-50 hover:bg-blue-100"
+                            : "text-gray-400 hover:text-blue-500 hover:bg-blue-50"
+                        }`}
+                        title={
+                          isGamePinned(game.id)
+                            ? "Unpin from top"
+                            : "Pin to top"
+                        }
+                        aria-pressed={isGamePinned(game.id)}
+                      >
+                        <Pin
+                          size={14}
+                          fill={isGamePinned(game.id) ? "currentColor" : "none"}
+                        />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(game.id);
+                        }}
+                        className="p-1.5 sm:p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                        title="Remove from favorites"
+                        aria-label={`Remove ${game.name} from favorites`}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
