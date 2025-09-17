@@ -3,7 +3,7 @@ import { Grid3X3, List } from "lucide-react";
 // Controls component: responsible for sorting games and toggling view mode (grid/list)
 const Controls = ({ viewMode, setViewMode }) => {
   return (
-    <div className="mb-8 ">
+    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
       {/* Container: Flex to space sort dropdown and view mode buttons apart */}
       <div className="flex justify-between items-center ">
         {/* -------------------------
