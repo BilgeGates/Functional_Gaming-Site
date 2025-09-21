@@ -89,13 +89,12 @@ const Products = () => {
     handleClearSearch,
   } = useHandlers(gameData, addToRecentViews, submitRating);
 
-  // ✅ Favorit handler – obyektlə işləsin
   const handleFavoriteToggle = useCallback(
     (game) => (e) => {
       e.preventDefault();
       e.stopPropagation();
       if (toggleFavorite && game && game.id) {
-        toggleFavorite(game); // <-- obyekt göndərilir
+        toggleFavorite(game);
       }
     },
     [toggleFavorite]
@@ -220,7 +219,7 @@ const Products = () => {
                     getUserRating={getUserRating}
                     onSelect={handleGameClick}
                     onRate={openRatingModal}
-                    onToggleFavorite={() => toggleFavorite(game)} // ✅ obyekt göndər
+                    onToggleFavorite={() => toggleFavorite(game)}
                     isFavorited={isGameFavorited(game.id)}
                     showActions={true}
                   />
@@ -326,11 +325,11 @@ const Products = () => {
                                 <button
                                   onClick={handleRatingClick(game)}
                                   title="Rate this game"
-                                  className="p-1.5 sm:p-2 rounded-full text-yellow-500 hover:text-yellow-600 transition-all duration-200 ease-in-out hover:bg-yellow-50 hover:scale-110"
+                                  className="p-1.5 sm:p-2 rounded-full text-yellow-500 hover:text-yellow-600 transition-all duration-200 ease-in-out hover:scale-110"
                                   aria-label={`Rate ${game.name}`}
                                 >
                                   <Star
-                                    size={14}
+                                    size={16}
                                     fill={
                                       userRating > 0 ? "currentColor" : "none"
                                     }
@@ -340,11 +339,11 @@ const Products = () => {
 
                                 {/* Favorite Button */}
                                 <button
-                                  onClick={handleFavoriteToggle(game)} // ✅ obyekt göndər
+                                  onClick={handleFavoriteToggle(game)}
                                   className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 ease-in-out hover:scale-110 ${
                                     isFavorited
-                                      ? "text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100"
-                                      : "text-gray-400 hover:text-red-500 hover:bg-red-50"
+                                      ? "text-red-500 hover:text-red-600"
+                                      : "text-gray-400 hover:text-red-500"
                                   }`}
                                   title={
                                     isFavorited
@@ -358,7 +357,7 @@ const Products = () => {
                                   }
                                 >
                                   <Heart
-                                    size={14}
+                                    size={16}
                                     fill={isFavorited ? "currentColor" : "none"}
                                     stroke="currentColor"
                                   />
