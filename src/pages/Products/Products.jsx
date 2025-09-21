@@ -195,7 +195,7 @@ const Products = () => {
               isGameFavorited={isGameFavorited}
             />
           </div>
-          <div className="flex-shrink-0">
+          <div className="-mt-[3.9rem]">
             <Controls
               sortBy={sortBy}
               handleSortChange={handleSortChange}
