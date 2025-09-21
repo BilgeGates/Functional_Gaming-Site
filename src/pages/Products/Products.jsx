@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 
 // Layout components
@@ -29,11 +29,15 @@ import { ErrorMessage, LoadingSpinner } from "../../components/ui";
 // Date utilities
 import { formatReleaseDate } from "../../utils";
 
+// Safe utility functions
+import {
+  safeGetUserRating,
+  safeIsGameFavorited,
+  getPlatformIcon,
+} from "../../utils";
+
 // Icons
 import { ArrowUp, Calendar, Users, Star, Heart, Gamepad2 } from "lucide-react";
-
-// Import platform utils
-import { getPlatformIcon } from "../../utils";
 
 const Products = () => {
   useDocumentTitle("Products | PlayGuide");
@@ -85,6 +89,29 @@ const Products = () => {
     handleClearSearch,
   } = useHandlers(gameData, addToRecentViews, submitRating);
 
+  // ✅ Favorit handler – obyektlə işləsin
+  const handleFavoriteToggle = useCallback(
+    (game) => (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (toggleFavorite && game && game.id) {
+        toggleFavorite(game); // <-- obyekt göndərilir
+      }
+    },
+    [toggleFavorite]
+  );
+
+  const handleRatingClick = useCallback(
+    (game) => (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (openRatingModal && game) {
+        openRatingModal(game, e);
+      }
+    },
+    [openRatingModal]
+  );
+
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.pageYOffset > 300);
@@ -109,18 +136,6 @@ const Products = () => {
     const platformName = platform?.platform?.name || "";
     const IconComponent = getPlatformIcon(platformName);
     return IconComponent ? IconComponent : null;
-  };
-
-  const handleFavoriteClick = (e, gameId) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleFavorite(gameId);
-  };
-
-  const handleRateClick = (e, game) => {
-    e.preventDefault();
-    e.stopPropagation();
-    openRatingModal(game);
   };
 
   const handleGameClick = (game) => {
@@ -175,8 +190,10 @@ const Products = () => {
               setShowResults={gameData?.setShowResults}
               handleGameSelect={handleGameClick}
               formatDate={formatReleaseDate}
-              recentSearches={[]} // düzəldildi
-              onAddRecentSearch={() => {}} // düzəldildi
+              recentSearches={[]}
+              onAddRecentSearch={() => {}}
+              toggleFavorite={toggleFavorite}
+              isGameFavorited={isGameFavorited}
             />
           </div>
           <div className="flex-shrink-0">
@@ -203,7 +220,7 @@ const Products = () => {
                     getUserRating={getUserRating}
                     onSelect={handleGameClick}
                     onRate={openRatingModal}
-                    onToggleFavorite={toggleFavorite}
+                    onToggleFavorite={() => toggleFavorite(game)} // ✅ obyekt göndər
                     isFavorited={isGameFavorited(game.id)}
                     showActions={true}
                   />
@@ -212,144 +229,176 @@ const Products = () => {
             ) : (
               /* List view */
               <div className="space-y-4">
-                {displayedGames.map((game) => (
-                  <div
-                    key={game.id}
-                    className="bg-gray-900/80 backdrop-blur-sm rounded-xl border border-gray-700/40 hover:border-cyan-500/50 hover:bg-gray-800/80 transition-all duration-300 group overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-cyan-500/10"
-                  >
-                    <div className="p-5">
-                      <div className="flex gap-5 items-start">
-                        {/* Game Image */}
-                        <Link
-                          to={`/products/${game.id}`}
-                          onClick={() => handleGameClick(game)}
-                          className="flex-shrink-0"
-                        >
-                          <div className="w-28 h-20 sm:w-32 sm:h-[88px] md:w-36 md:h-24 rounded-xl overflow-hidden relative group/img">
-                            <img
-                              src={
-                                game.background_image || "/placeholder-game.jpg"
-                              }
-                              alt={game.name || "Game"}
-                              className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"
-                              loading="lazy"
-                              onError={(e) => {
-                                e.target.src = "/placeholder-game.jpg";
-                              }}
-                            />
-                            {game.rating && (
-                              <div className="absolute top-2 left-2 bg-black/90 text-yellow-400 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 backdrop-blur-sm">
-                                <Star className="w-3 h-3 fill-current" />
-                                {game.rating.toFixed(1)}
-                              </div>
-                            )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300" />
-                          </div>
-                        </Link>
+                {displayedGames.map((game) => {
+                  if (!game || !game.id) return null;
 
-                        {/* Game Info */}
-                        <div className="flex-1 min-w-0 space-y-3">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1 min-w-0">
-                              <Link
-                                to={`/products/${game.id}`}
-                                onClick={() => handleGameClick(game)}
-                                className="block"
-                              >
-                                <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors duration-300 truncate mb-2">
-                                  {game.name || "Unknown Game"}
-                                </h3>
-                              </Link>
+                  const userRating = safeGetUserRating(getUserRating, game.id);
+                  const isFavorited = safeIsGameFavorited(
+                    isGameFavorited,
+                    game.id
+                  );
 
-                              {/* Tags */}
-                              <div className="flex items-center flex-wrap gap-3 text-sm text-gray-400">
-                                <span className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-400 px-3 py-1.5 rounded-full font-medium text-xs border border-cyan-500/20">
-                                  {game.genres?.[0]?.name || "Unknown Genre"}
-                                </span>
-                                <span className="flex items-center gap-1.5 text-gray-400 ">
-                                  <Calendar className="w-4 h-4" />
-                                  {formatReleaseDate(game.released)}
-                                </span>
-                                <span className="flex items-center gap-1.5 text-gray-400 ">
-                                  <Users className="w-4 h-4" />
-                                  {game.ratings_count
-                                    ? `${Math.round(
-                                        game.ratings_count / 1000
-                                      )}k`
-                                    : "0"}{" "}
-                                  reviews
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Right Actions */}
-                            <div className="flex items-start gap-3 flex-shrink-0">
-                              <button
-                                onClick={(e) => handleFavoriteClick(e, game.id)}
-                                className={`p-3 rounded-xl transition-all duration-300 ${
-                                  isGameFavorited(game.id)
-                                    ? "text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20"
-                                    : "text-gray-500 hover:text-red-500 hover:bg-red-500/10 border border-gray-600/30 hover:border-red-500/20"
-                                } transform hover:scale-105`}
-                                title={
-                                  isGameFavorited(game.id)
-                                    ? "Remove from favorites"
-                                    : "Add to favorites"
+                  return (
+                    <div
+                      key={game.id}
+                      className="bg-gray-900/80 backdrop-blur-sm rounded-xl border border-gray-700/40 hover:border-cyan-500/50 hover:bg-gray-800/80 transition-all duration-300 group overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-cyan-500/10"
+                    >
+                      <div className="p-5">
+                        <div className="flex gap-5 items-start">
+                          {/* Game Image */}
+                          <Link
+                            to={`/products/${game.id}`}
+                            onClick={() => handleGameClick(game)}
+                            className="flex-shrink-0"
+                          >
+                            <div className="w-28 h-20 sm:w-32 sm:h-[88px] md:w-36 md:h-24 rounded-xl overflow-hidden relative group/img">
+                              <img
+                                src={
+                                  game.background_image ||
+                                  "https://via.placeholder.com/128x72?text=No+Image"
                                 }
-                              >
-                                <Heart
-                                  className="w-5 h-5"
-                                  fill={
-                                    isGameFavorited(game.id)
-                                      ? "currentColor"
-                                      : "none"
-                                  }
-                                />
-                              </button>
-
-                              <button
-                                onClick={(e) => handleRateClick(e, game)}
-                                className="px-4 py-2.5 bg-gradient-to-r from-yellow-500/80 to-orange-500/80 hover:from-yellow-500 hover:to-orange-500 text-white font-semibold rounded-xl transition-all duration-300 flex items-center gap-2 text-sm whitespace-nowrap transform hover:scale-105 shadow-lg hover:shadow-xl"
-                                title="Rate this game"
-                              >
-                                <Star className="w-4 h-4" />
-                                Rate
-                              </button>
+                                alt={game.name || "Game"}
+                                className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"
+                                loading="lazy"
+                                onError={(e) => {
+                                  e.target.src =
+                                    "https://via.placeholder.com/128x72?text=No+Image";
+                                }}
+                              />
+                              {game.rating && (
+                                <div className="absolute top-2 left-2 bg-black/90 text-yellow-400 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 backdrop-blur-sm">
+                                  <Star className="w-3 h-3 fill-current" />
+                                  {game.rating.toFixed(1)}
+                                </div>
+                              )}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300" />
                             </div>
-                          </div>
+                          </Link>
 
-                          {/* Platforms */}
-                          <div className="flex items-center justify-between gap-4 pt-3 border-t border-gray-700/50">
-                            <div className="flex items-center gap-4 flex-wrap">
-                              <div className="flex items-center gap-3">
-                                <span className="text-md text-gray-500 font-medium">
-                                  Available on:
-                                </span>
-                                <div className="flex items-center gap-2">
-                                  {(game.platforms || [])
-                                    .slice(0, 5)
-                                    .map((platform, idx) => {
-                                      const IconComponent =
-                                        getPlatformIconComponent(platform);
-                                      return (
-                                        <div
-                                          key={idx}
-                                          className="flex items-center justify-center w-8 h-8 bg-gray-800/60 rounded-lg hover:bg-gray-700/60 transition-colors duration-200 group/platform"
-                                          title={platform?.platform?.name}
-                                        >
-                                          {IconComponent ? (
-                                            <IconComponent className="w-5 h-5 text-gray-400 group-hover/platform:text-cyan-400 transition-colors duration-200" />
-                                          ) : (
-                                            <Gamepad2 className="w-5 h-5 text-gray-400 group-hover/platform:text-cyan-400 transition-colors duration-200" />
-                                          )}
-                                        </div>
-                                      );
-                                    })}
-                                  {(game.platforms || []).length > 5 && (
-                                    <div className="flex items-center justify-center w-8 h-8 bg-gray-800/60 rounded-lg text-xs text-gray-500 font-medium">
-                                      +{(game.platforms || []).length - 5}
-                                    </div>
-                                  )}
+                          {/* Game Info */}
+                          <div className="flex-1 min-w-0 space-y-3">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 min-w-0">
+                                <Link
+                                  to={`/products/${game.id}`}
+                                  onClick={() => handleGameClick(game)}
+                                  className="block"
+                                >
+                                  <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors duration-300 truncate mb-2">
+                                    {game.name || "Unknown Game"}
+                                  </h3>
+                                </Link>
+
+                                {/* Tags */}
+                                <div className="flex items-center flex-wrap gap-3 text-sm text-gray-400">
+                                  <span className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-400 px-3 py-1.5 rounded-full font-medium text-xs border border-cyan-500/20">
+                                    {game.genres?.[0]?.name || "Unknown Genre"}
+                                  </span>
+                                  <span className="flex items-center gap-1.5 text-gray-400">
+                                    <Calendar className="w-4 h-4" />
+                                    {formatReleaseDate(game.released)}
+                                  </span>
+                                  <span className="flex items-center gap-1.5 text-gray-400">
+                                    <Users className="w-4 h-4" />
+                                    {game.ratings_count
+                                      ? `${Math.round(
+                                          game.ratings_count / 1000
+                                        )}k`
+                                      : "0"}{" "}
+                                    reviews
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Action Buttons */}
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                {/* User Rating Display */}
+                                {userRating > 0 && (
+                                  <div className="flex items-center gap-1 bg-yellow-100 text-yellow-800 px-1.5 sm:px-2 py-1 rounded-full text-xs select-none">
+                                    <Star size={10} fill="currentColor" />
+                                    <span className="hidden sm:inline">
+                                      {userRating.toFixed(1)}
+                                    </span>
+                                  </div>
+                                )}
+
+                                {/* Rate Button */}
+                                <button
+                                  onClick={handleRatingClick(game)}
+                                  title="Rate this game"
+                                  className="p-1.5 sm:p-2 rounded-full text-yellow-500 hover:text-yellow-600 transition-all duration-200 ease-in-out hover:bg-yellow-50 hover:scale-110"
+                                  aria-label={`Rate ${game.name}`}
+                                >
+                                  <Star
+                                    size={14}
+                                    fill={
+                                      userRating > 0 ? "currentColor" : "none"
+                                    }
+                                    stroke="currentColor"
+                                  />
+                                </button>
+
+                                {/* Favorite Button */}
+                                <button
+                                  onClick={handleFavoriteToggle(game)} // ✅ obyekt göndər
+                                  className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 ease-in-out hover:scale-110 ${
+                                    isFavorited
+                                      ? "text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100"
+                                      : "text-gray-400 hover:text-red-500 hover:bg-red-50"
+                                  }`}
+                                  title={
+                                    isFavorited
+                                      ? "Remove from favorites"
+                                      : "Add to favorites"
+                                  }
+                                  aria-label={
+                                    isFavorited
+                                      ? `Remove ${game.name} from favorites`
+                                      : `Add ${game.name} to favorites`
+                                  }
+                                >
+                                  <Heart
+                                    size={14}
+                                    fill={isFavorited ? "currentColor" : "none"}
+                                    stroke="currentColor"
+                                  />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Platforms */}
+                            <div className="flex items-center justify-between gap-4 pt-3 border-t border-gray-700/50">
+                              <div className="flex items-center gap-4 flex-wrap">
+                                <div className="flex items-center gap-3">
+                                  <span className="text-sm text-gray-500 font-medium">
+                                    Available on:
+                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    {(game.platforms || [])
+                                      .slice(0, 5)
+                                      .map((platform, idx) => {
+                                        const IconComponent =
+                                          getPlatformIconComponent(platform);
+                                        return (
+                                          <div
+                                            key={idx}
+                                            className="flex items-center justify-center w-8 h-8 bg-gray-800/60 rounded-lg hover:bg-gray-700/60 transition-colors duration-200 group/platform"
+                                            title={platform?.platform?.name}
+                                          >
+                                            {IconComponent ? (
+                                              <IconComponent className="w-5 h-5 text-gray-400 group-hover/platform:text-cyan-400 transition-colors duration-200" />
+                                            ) : (
+                                              <Gamepad2 className="w-5 h-5 text-gray-400 group-hover/platform:text-cyan-400 transition-colors duration-200" />
+                                            )}
+                                          </div>
+                                        );
+                                      })}
+                                    {(game.platforms || []).length > 5 && (
+                                      <div className="flex items-center justify-center w-8 h-8 bg-gray-800/60 rounded-lg text-xs text-gray-500 font-medium">
+                                        +{(game.platforms || []).length - 5}
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -357,8 +406,8 @@ const Products = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </>
