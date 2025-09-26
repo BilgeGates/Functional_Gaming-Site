@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 
-// Layout components
+// Layout
 import Navbar from "../../layout/Navbar/Navbar";
 import Footer from "../../layout/Footer/Footer";
 
@@ -12,7 +12,7 @@ import Controls from "../../components/common/Controls";
 import GameCard from "../../components/common/GameCard";
 import Pagination from "../../components/common/Pagination";
 
-// Custom hooks
+// Hooks
 import {
   useGameData,
   useFavorites,
@@ -23,14 +23,12 @@ import {
   useLogic,
 } from "../../hooks";
 
-// UI components
+// UI
 import { ErrorMessage, LoadingSpinner } from "../../components/ui";
 
-// Date utilities
-import { formatReleaseDate } from "../../utils";
-
-// Safe utility functions
+// Utils
 import {
+  formatReleaseDate,
   safeGetUserRating,
   safeIsGameFavorited,
   getPlatformIcon,
@@ -44,29 +42,29 @@ const Products = () => {
 
   const [showScrollTop, setShowScrollTop] = useState(false);
 
+  // Hook data
   const gameData = useGameData();
   const favorites = useFavorites();
   const rating = useRating();
   const recentViews = useRecentViews();
 
+  // Extract state safely
   const {
-    error = null,
-    searchTerm = "",
-    showFilters = false,
-    setShowFilters = () => {},
-    selectedGenre = "",
-    sortBy = "popularity",
-    searchResults = [],
-    showResults = false,
+    error,
+    searchTerm,
+    showFilters,
+    setShowFilters,
+    selectedGenre,
+    sortBy,
+    searchResults,
+    showResults,
   } = gameData || {};
 
-  const { toggleFavorite = () => {}, isGameFavorited = () => false } =
-    favorites || {};
+  const { toggleFavorite, isGameFavorited } = favorites || {};
+  const { submitRating, getUserRating } = rating || {};
+  const { addToRecentViews } = recentViews || {};
 
-  const { submitRating = () => {}, getUserRating = () => 0 } = rating || {};
-
-  const { addToRecentViews = () => {} } = recentViews || {};
-
+  // Logic for filtering, pagination, view mode
   const {
     displayedGames,
     currentPage,
@@ -77,6 +75,7 @@ const Products = () => {
     handleFilterClear,
   } = useLogic(gameData, searchResults, showResults);
 
+  // Handlers for UI
   const {
     showRatingModal,
     selectedGame,
@@ -84,62 +83,53 @@ const Products = () => {
     setSelectedGame,
     openRatingModal,
     handleRatingSubmit,
-    handleSearch,
     handleSortChange,
     handleClearSearch,
   } = useHandlers(gameData, addToRecentViews, submitRating);
 
+  // Favorites toggle
   const handleFavoriteToggle = useCallback(
     (game) => (e) => {
       e.preventDefault();
       e.stopPropagation();
-      if (toggleFavorite && game && game.id) {
-        toggleFavorite(game);
-      }
+      if (toggleFavorite && game?.id) toggleFavorite(game);
     },
     [toggleFavorite]
   );
 
+  // Rating click
   const handleRatingClick = useCallback(
     (game) => (e) => {
       e.preventDefault();
       e.stopPropagation();
-      if (openRatingModal && game) {
-        openRatingModal(game, e);
-      }
+      if (openRatingModal) openRatingModal(game, e);
     },
     [openRatingModal]
   );
 
+  // Show scroll-to-top after 300px
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.pageYOffset > 300);
-    };
+    const handleScroll = () => setShowScrollTop(window.pageYOffset > 300);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  if (error) return <ErrorMessage type="error" />;
 
-  if (error) return <ErrorMessage />;
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   const combinedHandleClearSearch = () => {
     handleClearSearch();
     handleFilterClear();
   };
 
-  // Platform Icon utility
+  // Get platform icon
   const getPlatformIconComponent = (platform) => {
-    const platformName = platform?.platform?.name || "";
-    const IconComponent = getPlatformIcon(platformName);
-    return IconComponent ? IconComponent : null;
+    const name = platform?.platform?.name || "";
+    return getPlatformIcon(name) || null;
   };
 
-  const handleGameClick = (game) => {
-    addToRecentViews(game);
-  };
+  const handleGameClick = (game) => addToRecentViews(game);
 
   return (
     <>
@@ -147,19 +137,16 @@ const Products = () => {
 
       {/* Hero Section */}
       <div className="relative pt-28 pb-24 overflow-hidden text-white">
-        <div className="relative container mx-auto max-w-7xl px-6 text-white text-center z-10">
+        <div className="container mx-auto max-w-7xl px-6 text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-cyan-400 to-purple-400 bg-clip-text text-transparent">
             Game Products
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Discover amazing games from every genre. Find your next gaming
-            adventure with our curated collection.
+            Discover amazing games from every genre. Find your next adventure
+            with our curated collection.
           </p>
           <nav className="flex items-center justify-center gap-2 text-sm">
-            <Link
-              to="/"
-              className="text-cyan-400 hover:text-white transition-colors"
-            >
+            <Link to="/" className="text-cyan-400 hover:text-white">
               Home
             </Link>
             <span className="text-gray-500">/</span>
@@ -170,8 +157,10 @@ const Products = () => {
 
       {/* Main Section */}
       <section className="container mx-auto max-w-7xl px-6 pb-32 -mt-10 relative z-20">
-        <div className="flex items-center gap-2 mb-8">
-          <div className="w-full sm:w-auto flex-1">
+        {/* Search + Controls - Responsive Layout */}
+        <div className="mb-8">
+          {/* Search Bar - Full Width */}
+          <div className="w-full mb-4">
             <SearchBar
               searchTerm={searchTerm}
               setSearchTerm={gameData?.setSearchTerm}
@@ -182,54 +171,65 @@ const Products = () => {
               sortBy={sortBy}
               setSortBy={gameData?.setSortBy}
               genres={gameData?.genres || []}
-              handleSearch={handleSearch}
               clearSearch={combinedHandleClearSearch}
-              searchResults={searchResults}
-              showResults={showResults}
-              setShowResults={gameData?.setShowResults}
-              handleGameSelect={handleGameClick}
-              formatDate={formatReleaseDate}
-              recentSearches={[]}
-              onAddRecentSearch={() => {}}
-              toggleFavorite={toggleFavorite}
-              isGameFavorited={isGameFavorited}
+              showGenreTags={false} // Hide genre tags in Products page
+              enableDropdown={false} // Disable dropdown in Products page
             />
           </div>
-          <div className="-mt-[3.9rem]">
-            <Controls
-              sortBy={sortBy}
-              handleSortChange={handleSortChange}
-              viewMode={viewMode}
-              setViewMode={setViewMode}
-            />
+
+          {/* Controls - Responsive Position */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {/* Search Results Count */}
+            <div className="text-sm text-gray-400">
+              {searchTerm ? (
+                <span>
+                  Found {displayedGames?.length || 0} games for "{searchTerm}"
+                </span>
+              ) : (
+                <span>Showing {displayedGames?.length || 0} games</span>
+              )}
+            </div>
+
+            {/* View Mode Controls */}
+            <div className="flex items-center justify-end sm:justify-start">
+              <Controls
+                sortBy={sortBy}
+                handleSortChange={handleSortChange}
+                viewMode={viewMode}
+                setViewMode={setViewMode}
+              />
+            </div>
           </div>
         </div>
 
+        {/* Loading */}
         {gameData?.loading && <LoadingSpinner />}
+
+        {/* Game List */}
         {!gameData?.loading && displayedGames.length > 0 && (
           <>
             {viewMode === "grid" ? (
-              <div className="columns-1 sm:columns-2 lg:columns-4 gap-6">
+              // Grid view
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {displayedGames.map((game) => (
                   <GameCard
                     key={game.id}
                     game={game}
                     viewMode={viewMode}
-                    animated={true}
+                    animated
                     getUserRating={getUserRating}
                     onSelect={handleGameClick}
                     onRate={openRatingModal}
                     onToggleFavorite={() => toggleFavorite(game)}
                     isFavorited={isGameFavorited(game.id)}
-                    showActions={true}
                   />
                 ))}
               </div>
             ) : (
-              /* List view */
+              // List view
               <div className="space-y-4">
                 {displayedGames.map((game) => {
-                  if (!game || !game.id) return null;
+                  if (!game?.id) return null;
 
                   const userRating = safeGetUserRating(getUserRating, game.id);
                   const isFavorited = safeIsGameFavorited(
@@ -244,7 +244,7 @@ const Products = () => {
                     >
                       <div className="p-5">
                         <div className="flex gap-5 items-start">
-                          {/* Game Image */}
+                          {/* Thumbnail */}
                           <Link
                             to={`/products/${game.id}`}
                             onClick={() => handleGameClick(game)}
@@ -259,10 +259,10 @@ const Products = () => {
                                 alt={game.name || "Game"}
                                 className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"
                                 loading="lazy"
-                                onError={(e) => {
-                                  e.target.src =
-                                    "https://via.placeholder.com/128x72?text=No+Image";
-                                }}
+                                onError={(e) =>
+                                  (e.target.src =
+                                    "https://via.placeholder.com/128x72?text=No+Image")
+                                }
                               />
                               {game.rating && (
                                 <div className="absolute top-2 left-2 bg-black/90 text-yellow-400 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 backdrop-blur-sm">
@@ -274,14 +274,13 @@ const Products = () => {
                             </div>
                           </Link>
 
-                          {/* Game Info */}
+                          {/* Info */}
                           <div className="flex-1 min-w-0 space-y-3">
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex-1 min-w-0">
                                 <Link
                                   to={`/products/${game.id}`}
                                   onClick={() => handleGameClick(game)}
-                                  className="block"
                                 >
                                   <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors duration-300 truncate mb-2">
                                     {game.name || "Unknown Game"}
@@ -293,11 +292,11 @@ const Products = () => {
                                   <span className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-400 px-3 py-1.5 rounded-full font-medium text-xs border border-cyan-500/20">
                                     {game.genres?.[0]?.name || "Unknown Genre"}
                                   </span>
-                                  <span className="flex items-center gap-1.5 text-gray-400">
+                                  <span className="flex items-center gap-1.5">
                                     <Calendar className="w-4 h-4" />
                                     {formatReleaseDate(game.released)}
                                   </span>
-                                  <span className="flex items-center gap-1.5 text-gray-400">
+                                  <span className="flex items-center gap-1.5">
                                     <Users className="w-4 h-4" />
                                     {game.ratings_count
                                       ? `${Math.round(
@@ -311,7 +310,6 @@ const Products = () => {
 
                               {/* Action Buttons */}
                               <div className="flex items-center gap-2 flex-shrink-0">
-                                {/* User Rating Display */}
                                 {userRating > 0 && (
                                   <div className="flex items-center gap-1 bg-yellow-100 text-yellow-800 px-1.5 sm:px-2 py-1 rounded-full text-xs select-none">
                                     <Star size={10} fill="currentColor" />
@@ -321,12 +319,11 @@ const Products = () => {
                                   </div>
                                 )}
 
-                                {/* Rate Button */}
+                                {/* Rate */}
                                 <button
                                   onClick={handleRatingClick(game)}
                                   title="Rate this game"
-                                  className="p-1.5 sm:p-2 rounded-full text-yellow-500 hover:text-yellow-600 transition-all duration-200 ease-in-out hover:scale-110"
-                                  aria-label={`Rate ${game.name}`}
+                                  className="p-1.5 sm:p-2 rounded-full text-yellow-500 hover:text-yellow-600 transition-all hover:scale-110"
                                 >
                                   <Star
                                     size={16}
@@ -337,10 +334,10 @@ const Products = () => {
                                   />
                                 </button>
 
-                                {/* Favorite Button */}
+                                {/* Favorite */}
                                 <button
                                   onClick={handleFavoriteToggle(game)}
-                                  className={`p-1.5 sm:p-2 rounded-full transition-all duration-200 ease-in-out hover:scale-110 ${
+                                  className={`p-1.5 sm:p-2 rounded-full transition-all hover:scale-110 ${
                                     isFavorited
                                       ? "text-red-500 hover:text-red-600"
                                       : "text-gray-400 hover:text-red-500"
@@ -349,11 +346,6 @@ const Products = () => {
                                     isFavorited
                                       ? "Remove from favorites"
                                       : "Add to favorites"
-                                  }
-                                  aria-label={
-                                    isFavorited
-                                      ? `Remove ${game.name} from favorites`
-                                      : `Add ${game.name} to favorites`
                                   }
                                 >
                                   <Heart
@@ -381,13 +373,13 @@ const Products = () => {
                                         return (
                                           <div
                                             key={idx}
-                                            className="flex items-center justify-center w-8 h-8 bg-gray-800/60 rounded-lg hover:bg-gray-700/60 transition-colors duration-200 group/platform"
+                                            className="flex items-center justify-center w-8 h-8 bg-gray-800/60 rounded-lg hover:bg-gray-700/60 transition-colors group/platform"
                                             title={platform?.platform?.name}
                                           >
                                             {IconComponent ? (
-                                              <IconComponent className="w-5 h-5 text-gray-400 group-hover/platform:text-cyan-400 transition-colors duration-200" />
+                                              <IconComponent className="w-5 h-5 text-gray-400 group-hover/platform:text-cyan-400" />
                                             ) : (
-                                              <Gamepad2 className="w-5 h-5 text-gray-400 group-hover/platform:text-cyan-400 transition-colors duration-200" />
+                                              <Gamepad2 className="w-5 h-5 text-gray-400 group-hover/platform:text-cyan-400" />
                                             )}
                                           </div>
                                         );
@@ -412,47 +404,59 @@ const Products = () => {
           </>
         )}
 
+        {/* Empty State */}
         {!gameData?.loading &&
           (!displayedGames || displayedGames.length === 0) && (
-            <div className="text-center py-20">
-              <div className="bg-gray-800/50 border border-gray-700/50 rounded-xl p-8 max-w-md mx-auto">
-                <div className="text-6xl mb-4">🎮</div>
-                <p className="text-gray-400 text-lg mb-4">No games found</p>
-                <p className="text-gray-500 text-sm mb-6">
-                  Try adjusting your search criteria or clear filters to see
-                  more results.
-                </p>
-                <button
-                  onClick={combinedHandleClearSearch}
-                  className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-purple-600 transition-all duration-300"
-                >
-                  Clear Filters
-                </button>
+            <div className="text-center py-16">
+              <div className="text-gray-400 mb-4">
+                <Gamepad2 className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                {searchTerm ? (
+                  <>
+                    <h3 className="text-xl font-semibold text-white mb-2">
+                      No games found
+                    </h3>
+                    <p className="text-gray-400">
+                      No games match your search "{searchTerm}". Try different
+                      keywords.
+                    </p>
+                    <button
+                      onClick={combinedHandleClearSearch}
+                      className="mt-4 px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-purple-600 transition-all duration-300"
+                    >
+                      Clear Search
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-xl font-semibold text-white mb-2">
+                      No games available
+                    </h3>
+                    <p className="text-gray-400">
+                      Games are currently being loaded. Please try again later.
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           )}
 
         {/* Pagination */}
-        {!gameData?.loading &&
-          displayedGames &&
-          displayedGames.length > 0 &&
-          totalPages > 1 && (
-            <div className="mt-12">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                setCurrentPage={setCurrentPage}
-              />
-            </div>
-          )}
+        {!gameData?.loading && displayedGames.length > 0 && totalPages > 1 && (
+          <div className="mt-12">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              setCurrentPage={setCurrentPage}
+            />
+          </div>
+        )}
       </section>
 
       {/* Scroll to Top */}
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-50 w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-full shadow-2xl flex items-center justify-center group hover:scale-110 transition-transform duration-300"
-          aria-label="Scroll to top"
+          className="fixed bottom-8 right-8 z-50 w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform"
         >
           <ArrowUp className="w-6 h-6" />
         </button>
