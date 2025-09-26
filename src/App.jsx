@@ -1,10 +1,10 @@
-import React from "react";
-import Router from "./Routes/Router";
-
+import { Outlet } from "react-router-dom";
+import Navbar from "./layout/Navbar/Navbar";
 function App() {
   return (
     <>
-      <Router />
+      <Navbar />
+      <Outlet />
     </>
   );
 }
