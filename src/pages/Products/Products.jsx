@@ -37,6 +37,61 @@ import {
 // Icons
 import { ArrowUp, Calendar, Users, Star, Heart, Gamepad2 } from "lucide-react";
 
+// Custom hook for in-view animation
+const useInViewAnimation = (items = [], batchSize = 4) => {
+  const [visibleItems, setVisibleItems] = useState(new Set());
+  const [containerRef, setContainerRef] = useState(null);
+
+  useEffect(() => {
+    if (!items.length || !containerRef) {
+      setVisibleItems(new Set());
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const gameId = entry.target.dataset.id;
+            if (gameId) {
+              setVisibleItems((prev) => new Set([...prev, gameId]));
+              observer.unobserve(entry.target);
+            }
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "50px 0px",
+      }
+    );
+
+    // Small delay to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      const children = containerRef.querySelectorAll("[data-id]");
+
+      // Show first batch immediately
+      children.forEach((child, index) => {
+        const gameId = child.dataset.id;
+        if (!gameId) return;
+
+        if (index < batchSize) {
+          setVisibleItems((prev) => new Set([...prev, gameId]));
+        } else {
+          observer.observe(child);
+        }
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      observer.disconnect();
+    };
+  }, [items, batchSize, containerRef]);
+
+  return { containerRef: setContainerRef, visibleItems };
+};
+
 const Products = () => {
   useDocumentTitle("Products | PlayGuide");
 
@@ -75,6 +130,9 @@ const Products = () => {
     handleFilterClear,
   } = useLogic(gameData, searchResults, showResults);
 
+  // Animation hook
+  const { containerRef, visibleItems } = useInViewAnimation(displayedGames, 4);
+
   // Handlers for UI
   const {
     showRatingModal,
@@ -86,6 +144,12 @@ const Products = () => {
     handleSortChange,
     handleClearSearch,
   } = useHandlers(gameData, addToRecentViews, submitRating);
+
+  // Page change handler with transition
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Favorites toggle
   const handleFavoriteToggle = useCallback(
@@ -131,8 +195,198 @@ const Products = () => {
 
   const handleGameClick = (game) => addToRecentViews(game);
 
+  // Animated List Game Card Component
+  const AnimatedListGameCard = ({ game, index }) => {
+    const userRating = safeGetUserRating(getUserRating, game.id);
+    const isFavorited = safeIsGameFavorited(isGameFavorited, game.id);
+
+    return (
+      <div
+        className="transition-all duration-500 ease-out transform opacity-0 translate-y-4 scale-98"
+        style={{
+          animation: `fadeInUp 0.5s ease-out ${index * 50}ms forwards`,
+        }}
+      >
+        <div className="bg-gray-900/80 backdrop-blur-sm rounded-xl border border-gray-700/40 hover:border-cyan-500/50 hover:bg-gray-800/80 transition-all duration-300 group overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-cyan-500/10">
+          <div className="p-4 sm:p-5">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-start">
+              {/* Thumbnail */}
+              <Link
+                to={`/products/${game.id}`}
+                onClick={() => handleGameClick(game)}
+                className="flex-shrink-0 w-full sm:w-auto"
+              >
+                <div className="w-full h-48 sm:w-28 sm:h-20 md:w-32 md:h-[88px] lg:w-36 lg:h-24 rounded-xl overflow-hidden relative group/img">
+                  <img
+                    src={
+                      game.background_image ||
+                      "https://via.placeholder.com/128x72?text=No+Image"
+                    }
+                    alt={game.name || "Game"}
+                    className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                    onError={(e) =>
+                      (e.target.src =
+                        "https://via.placeholder.com/128x72?text=No+Image")
+                    }
+                  />
+                  {game.rating && (
+                    <div className="absolute top-2 left-2 bg-black/90 text-yellow-400 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 backdrop-blur-sm">
+                      <Star className="w-3 h-3 fill-current" />
+                      {game.rating.toFixed(1)}
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300" />
+                </div>
+              </Link>
+
+              {/* Info */}
+              <div className="flex-1 min-w-0 space-y-3 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      to={`/products/${game.id}`}
+                      onClick={() => handleGameClick(game)}
+                    >
+                      <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-cyan-400 transition-colors duration-300 line-clamp-2 sm:truncate mb-2">
+                        {game.name || "Unknown Game"}
+                      </h3>
+                    </Link>
+
+                    {/* Tags */}
+                    <div className="flex items-center flex-wrap gap-2 sm:gap-3 text-sm text-gray-400">
+                      <span className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-400 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-medium text-xs border border-cyan-500/20">
+                        {game.genres?.[0]?.name || "Unknown Genre"}
+                      </span>
+                      <span className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm">
+                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                        {formatReleaseDate(game.released)}
+                      </span>
+                      <span className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm">
+                        <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                        {game.ratings_count
+                          ? `${Math.round(game.ratings_count / 1000)}k`
+                          : "0"}{" "}
+                        reviews
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-end sm:justify-start gap-2 flex-shrink-0">
+                    {userRating > 0 && (
+                      <div className="flex items-center gap-1 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs select-none">
+                        <Star size={10} fill="currentColor" />
+                        <span>{userRating.toFixed(1)}</span>
+                      </div>
+                    )}
+
+                    {/* Rate */}
+                    <button
+                      onClick={handleRatingClick(game)}
+                      title="Rate this game"
+                      className="p-2 rounded-full text-yellow-500 hover:text-yellow-600 transition-all hover:scale-110"
+                    >
+                      <Star
+                        size={16}
+                        fill={userRating > 0 ? "currentColor" : "none"}
+                        stroke="currentColor"
+                      />
+                    </button>
+
+                    {/* Favorite */}
+                    <button
+                      onClick={handleFavoriteToggle(game)}
+                      className={`p-2 rounded-full transition-all hover:scale-110 ${
+                        isFavorited
+                          ? "text-red-500 hover:text-red-600"
+                          : "text-gray-400 hover:text-red-500"
+                      }`}
+                      title={
+                        isFavorited
+                          ? "Remove from favorites"
+                          : "Add to favorites"
+                      }
+                    >
+                      <Heart
+                        size={16}
+                        fill={isFavorited ? "currentColor" : "none"}
+                        stroke="currentColor"
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Platforms */}
+                <div className="flex items-center justify-between gap-4 pt-3 border-t border-gray-700/50">
+                  <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <span className="text-xs sm:text-sm text-gray-500 font-medium">
+                        Available on:
+                      </span>
+                      <div className="flex items-center gap-1 sm:gap-2">
+                        {(game.platforms || [])
+                          .slice(0, 5)
+                          .map((platform, idx) => {
+                            const IconComponent =
+                              getPlatformIconComponent(platform);
+                            return (
+                              <div
+                                key={idx}
+                                className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-gray-800/60 rounded-lg hover:bg-gray-700/60 transition-colors group/platform"
+                                title={platform?.platform?.name}
+                              >
+                                {IconComponent ? (
+                                  <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover/platform:text-cyan-400" />
+                                ) : (
+                                  <Gamepad2 className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover/platform:text-cyan-400" />
+                                )}
+                              </div>
+                            );
+                          })}
+                        {(game.platforms || []).length > 5 && (
+                          <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-gray-800/60 rounded-lg text-xs text-gray-500 font-medium">
+                            +{(game.platforms || []).length - 5}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(16px) scale(0.98);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        @keyframes fadeInGrid {
+          from {
+            opacity: 0;
+            transform: translateY(12px) scale(0.99);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+      `}</style>
+
       <Navbar />
 
       {/* Hero Section */}
@@ -158,9 +412,9 @@ const Products = () => {
       {/* Main Section */}
       <section className="container mx-auto max-w-7xl px-6 pb-32 -mt-10 relative z-20">
         {/* Search + Controls - Responsive Layout */}
-        <div className="mb-8">
+        <div className="mb-8 space-y-4">
           {/* Search Bar - Full Width */}
-          <div className="w-full mb-4">
+          <div className="w-full">
             <SearchBar
               searchTerm={searchTerm}
               setSearchTerm={gameData?.setSearchTerm}
@@ -172,15 +426,15 @@ const Products = () => {
               setSortBy={gameData?.setSortBy}
               genres={gameData?.genres || []}
               clearSearch={combinedHandleClearSearch}
-              showGenreTags={false} // Hide genre tags in Products page
-              enableDropdown={false} // Disable dropdown in Products page
+              showGenreTags={false}
+              enableDropdown={false}
             />
           </div>
 
-          {/* Controls - Responsive Position */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          {/* Controls + Results - Improved Mobile Layout */}
+          <div className="flex flex-col space-y-4">
             {/* Search Results Count */}
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-gray-400 order-1">
               {searchTerm ? (
                 <span>
                   Found {displayedGames?.length || 0} games for "{searchTerm}"
@@ -191,13 +445,15 @@ const Products = () => {
             </div>
 
             {/* View Mode Controls */}
-            <div className="flex items-center justify-end sm:justify-start">
-              <Controls
-                sortBy={sortBy}
-                handleSortChange={handleSortChange}
-                viewMode={viewMode}
-                setViewMode={setViewMode}
-              />
+            <div className="order-2 w-full">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
+                <Controls
+                  sortBy={sortBy}
+                  handleSortChange={handleSortChange}
+                  viewMode={viewMode}
+                  setViewMode={setViewMode}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -209,196 +465,65 @@ const Products = () => {
         {!gameData?.loading && displayedGames.length > 0 && (
           <>
             {viewMode === "grid" ? (
-              // Grid view
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {displayedGames.map((game) => (
-                  <GameCard
-                    key={game.id}
-                    game={game}
-                    viewMode={viewMode}
-                    animated
-                    getUserRating={getUserRating}
-                    onSelect={handleGameClick}
-                    onRate={openRatingModal}
-                    onToggleFavorite={() => toggleFavorite(game)}
-                    isFavorited={isGameFavorited(game.id)}
-                  />
-                ))}
-              </div>
-            ) : (
-              // List view
-              <div className="space-y-4">
-                {displayedGames.map((game) => {
-                  if (!game?.id) return null;
-
-                  const userRating = safeGetUserRating(getUserRating, game.id);
-                  const isFavorited = safeIsGameFavorited(
-                    isGameFavorited,
-                    game.id
-                  );
+              // Grid view with Masonry layout and scroll animation
+              <div
+                ref={containerRef}
+                className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6"
+              >
+                {displayedGames.map((game, index) => {
+                  const isVisible = visibleItems.has(String(game.id));
+                  const isInitial = index < 4;
 
                   return (
                     <div
                       key={game.id}
-                      className="bg-gray-900/80 backdrop-blur-sm rounded-xl border border-gray-700/40 hover:border-cyan-500/50 hover:bg-gray-800/80 transition-all duration-300 group overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-cyan-500/10"
+                      data-id={game.id}
+                      className="break-inside-avoid mb-6"
                     >
-                      <div className="p-5">
-                        <div className="flex gap-5 items-start">
-                          {/* Thumbnail */}
-                          <Link
-                            to={`/products/${game.id}`}
-                            onClick={() => handleGameClick(game)}
-                            className="flex-shrink-0"
-                          >
-                            <div className="w-28 h-20 sm:w-32 sm:h-[88px] md:w-36 md:h-24 rounded-xl overflow-hidden relative group/img">
-                              <img
-                                src={
-                                  game.background_image ||
-                                  "https://via.placeholder.com/128x72?text=No+Image"
-                                }
-                                alt={game.name || "Game"}
-                                className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"
-                                loading="lazy"
-                                onError={(e) =>
-                                  (e.target.src =
-                                    "https://via.placeholder.com/128x72?text=No+Image")
-                                }
-                              />
-                              {game.rating && (
-                                <div className="absolute top-2 left-2 bg-black/90 text-yellow-400 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 backdrop-blur-sm">
-                                  <Star className="w-3 h-3 fill-current" />
-                                  {game.rating.toFixed(1)}
-                                </div>
-                              )}
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300" />
-                            </div>
-                          </Link>
-
-                          {/* Info */}
-                          <div className="flex-1 min-w-0 space-y-3">
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1 min-w-0">
-                                <Link
-                                  to={`/products/${game.id}`}
-                                  onClick={() => handleGameClick(game)}
-                                >
-                                  <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors duration-300 truncate mb-2">
-                                    {game.name || "Unknown Game"}
-                                  </h3>
-                                </Link>
-
-                                {/* Tags */}
-                                <div className="flex items-center flex-wrap gap-3 text-sm text-gray-400">
-                                  <span className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-400 px-3 py-1.5 rounded-full font-medium text-xs border border-cyan-500/20">
-                                    {game.genres?.[0]?.name || "Unknown Genre"}
-                                  </span>
-                                  <span className="flex items-center gap-1.5">
-                                    <Calendar className="w-4 h-4" />
-                                    {formatReleaseDate(game.released)}
-                                  </span>
-                                  <span className="flex items-center gap-1.5">
-                                    <Users className="w-4 h-4" />
-                                    {game.ratings_count
-                                      ? `${Math.round(
-                                          game.ratings_count / 1000
-                                        )}k`
-                                      : "0"}{" "}
-                                    reviews
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* Action Buttons */}
-                              <div className="flex items-center gap-2 flex-shrink-0">
-                                {userRating > 0 && (
-                                  <div className="flex items-center gap-1 bg-yellow-100 text-yellow-800 px-1.5 sm:px-2 py-1 rounded-full text-xs select-none">
-                                    <Star size={10} fill="currentColor" />
-                                    <span className="hidden sm:inline">
-                                      {userRating.toFixed(1)}
-                                    </span>
-                                  </div>
-                                )}
-
-                                {/* Rate */}
-                                <button
-                                  onClick={handleRatingClick(game)}
-                                  title="Rate this game"
-                                  className="p-1.5 sm:p-2 rounded-full text-yellow-500 hover:text-yellow-600 transition-all hover:scale-110"
-                                >
-                                  <Star
-                                    size={16}
-                                    fill={
-                                      userRating > 0 ? "currentColor" : "none"
-                                    }
-                                    stroke="currentColor"
-                                  />
-                                </button>
-
-                                {/* Favorite */}
-                                <button
-                                  onClick={handleFavoriteToggle(game)}
-                                  className={`p-1.5 sm:p-2 rounded-full transition-all hover:scale-110 ${
-                                    isFavorited
-                                      ? "text-red-500 hover:text-red-600"
-                                      : "text-gray-400 hover:text-red-500"
-                                  }`}
-                                  title={
-                                    isFavorited
-                                      ? "Remove from favorites"
-                                      : "Add to favorites"
-                                  }
-                                >
-                                  <Heart
-                                    size={16}
-                                    fill={isFavorited ? "currentColor" : "none"}
-                                    stroke="currentColor"
-                                  />
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Platforms */}
-                            <div className="flex items-center justify-between gap-4 pt-3 border-t border-gray-700/50">
-                              <div className="flex items-center gap-4 flex-wrap">
-                                <div className="flex items-center gap-3">
-                                  <span className="text-sm text-gray-500 font-medium">
-                                    Available on:
-                                  </span>
-                                  <div className="flex items-center gap-2">
-                                    {(game.platforms || [])
-                                      .slice(0, 5)
-                                      .map((platform, idx) => {
-                                        const IconComponent =
-                                          getPlatformIconComponent(platform);
-                                        return (
-                                          <div
-                                            key={idx}
-                                            className="flex items-center justify-center w-8 h-8 bg-gray-800/60 rounded-lg hover:bg-gray-700/60 transition-colors group/platform"
-                                            title={platform?.platform?.name}
-                                          >
-                                            {IconComponent ? (
-                                              <IconComponent className="w-5 h-5 text-gray-400 group-hover/platform:text-cyan-400" />
-                                            ) : (
-                                              <Gamepad2 className="w-5 h-5 text-gray-400 group-hover/platform:text-cyan-400" />
-                                            )}
-                                          </div>
-                                        );
-                                      })}
-                                    {(game.platforms || []).length > 5 && (
-                                      <div className="flex items-center justify-center w-8 h-8 bg-gray-800/60 rounded-lg text-xs text-gray-500 font-medium">
-                                        +{(game.platforms || []).length - 5}
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                      <div
+                        className={`transition-all duration-500 ease-out transform ${
+                          isInitial
+                            ? "opacity-0"
+                            : isVisible
+                            ? "opacity-100 translate-y-0 scale-100"
+                            : "opacity-0 translate-y-6 scale-98"
+                        }`}
+                        style={{
+                          transitionDelay: isInitial
+                            ? "0ms"
+                            : `${(index - 4) * 60}ms`,
+                          animation: isInitial
+                            ? `fadeInGrid 0.4s ease-out ${
+                                index * 60
+                              }ms forwards`
+                            : "none",
+                        }}
+                      >
+                        <GameCard
+                          game={game}
+                          viewMode={viewMode}
+                          animated
+                          getUserRating={getUserRating}
+                          onSelect={handleGameClick}
+                          onRate={openRatingModal}
+                          onToggleFavorite={() => toggleFavorite(game)}
+                          isFavorited={isGameFavorited(game.id)}
+                        />
                       </div>
                     </div>
                   );
                 })}
+              </div>
+            ) : (
+              // List view
+              <div className="space-y-4">
+                {displayedGames.map((game, index) => (
+                  <AnimatedListGameCard
+                    key={game.id}
+                    game={game}
+                    index={index}
+                  />
+                ))}
               </div>
             )}
           </>
@@ -407,31 +532,31 @@ const Products = () => {
         {/* Empty State */}
         {!gameData?.loading &&
           (!displayedGames || displayedGames.length === 0) && (
-            <div className="text-center py-16">
+            <div className="text-center py-16 px-4">
               <div className="text-gray-400 mb-4">
-                <Gamepad2 className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                <Gamepad2 className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 opacity-50" />
                 {searchTerm ? (
                   <>
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">
                       No games found
                     </h3>
-                    <p className="text-gray-400">
+                    <p className="text-sm sm:text-base text-gray-400 mb-4">
                       No games match your search "{searchTerm}". Try different
                       keywords.
                     </p>
                     <button
                       onClick={combinedHandleClearSearch}
-                      className="mt-4 px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-purple-600 transition-all duration-300"
+                      className="px-4 sm:px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 text-sm sm:text-base"
                     >
                       Clear Search
                     </button>
                   </>
                 ) : (
                   <>
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                    <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">
                       No games available
                     </h3>
-                    <p className="text-gray-400">
+                    <p className="text-sm sm:text-base text-gray-400">
                       Games are currently being loaded. Please try again later.
                     </p>
                   </>
@@ -446,7 +571,7 @@ const Products = () => {
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              setCurrentPage={setCurrentPage}
+              setCurrentPage={handlePageChange}
             />
           </div>
         )}
