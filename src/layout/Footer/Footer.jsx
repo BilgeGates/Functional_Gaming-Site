@@ -1,5 +1,3 @@
-import React from "react";
-
 import {
   Users,
   Mail,
@@ -8,11 +6,6 @@ import {
   Rocket,
   Star,
   Trophy,
-  Zap,
-  Sword,
-  Brain,
-  Car,
-  Puzzle,
   Linkedin,
   Github,
 } from "lucide-react";
@@ -176,51 +169,47 @@ const Footer = () => {
             <div className="space-y-3">
               {[
                 {
-                  name: "Action Games",
-                  icon: Zap,
-                  color: "text-orange-400",
+                  name: "Action",
                   filter: "action",
                 },
                 {
-                  name: "RPG Games",
-                  icon: Sword,
-                  color: "text-red-400",
+                  name: "Adventure",
+                  filter: "adventure",
+                },
+                {
+                  name: "Shooter",
+                  filter: "shooter",
+                },
+                {
+                  name: "RPG",
                   filter: "role-playing-games-rpg",
                 },
                 {
-                  name: "Sports Games",
-                  icon: Trophy,
-                  color: "text-yellow-400",
+                  name: "Sports",
                   filter: "sports",
                 },
                 {
-                  name: "Strategy Games",
-                  icon: Brain,
-                  color: "text-green-400",
+                  name: "Strategy",
                   filter: "strategy",
                 },
                 {
-                  name: "Racing Games",
-                  icon: Car,
-                  color: "text-blue-400",
+                  name: "Racing",
                   filter: "racing",
                 },
                 {
-                  name: "Puzzle Games",
-                  icon: Puzzle,
-                  color: "text-purple-400",
+                  name: "Simulation",
+                  filter: "simulation",
+                },
+                {
+                  name: "Puzzle",
                   filter: "puzzle",
                 },
               ].map((category, index) => (
                 <button
                   key={index}
                   onClick={() => handleGameCategoryClick(category.filter)}
-                  className="w-full text-left flex items-center gap-3 text-gray-300 hover:text-white transition-all duration-300 py-2 px-4 rounded-lg hover:bg-white/5 cursor-pointer group hover:border-l-2 hover:border-purple-400"
+                  className="w-full text-left flex items-center gap-3 text-gray-300 hover:text-white transition-all duration-300 py-2 px-4 rounded-lg hover:bg-white/5 cursor-pointer group hover:border-l-2 hover:border-purple-400 hover:translate-x-2"
                 >
-                  <category.icon
-                    size={20}
-                    className={`${category.color} group-hover:scale-110 transition-transform`}
-                  />
                   <span>{category.name}</span>
                 </button>
               ))}
