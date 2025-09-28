@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar, Users, Eye } from "lucide-react";
-import GameCard from "./GameCard";
-import useGameData from "../../hooks/useGameData";
-import { formatReleaseDate, formatRatingScore } from "../../utils";
+import { GameCard } from "./";
+import { useGameData } from "../../hooks";
+import { formatReleaseDate } from "../../utils";
 import { CardOverlay } from "../ui";
 
 /**
@@ -84,7 +84,7 @@ const GamesList = ({
   const ListViewItem = ({ game }) => {
     const primaryGenre = game.genres?.[0]?.name || "Unknown";
     const releaseDate = formatReleaseDate(game.released);
-    const ratingScore = formatRatingScore(game.rating);
+    // const ratingScore = formatRatingScore(game.rating);
 
     return (
       <div
@@ -111,7 +111,7 @@ const GamesList = ({
             />
             <div className="absolute top-2 right-2">
               <span className="px-2 py-1 rounded-full text-xs font-bold text-white bg-black/70">
-                {ratingScore}%
+                {/* {ratingScore}% */}
               </span>
             </div>
           </div>
