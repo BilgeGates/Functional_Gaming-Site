@@ -243,7 +243,13 @@ const ProductDetails = () => {
                       </h3>
                       <div className="flex flex-wrap gap-3">
                         {genres.map((genre) => {
-                          return <GenreBadge genre={genre} variant="solid" />;
+                          return (
+                            <GenreBadge
+                              key={genre.id || genre.filter || genre.name}
+                              genre={genre}
+                              variant="solid"
+                            />
+                          );
                         })}
                       </div>
                     </div>
