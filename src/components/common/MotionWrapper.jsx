@@ -1,10 +1,6 @@
 import { motion } from "framer-motion";
 
-export default function MotionWrapper({
-  children,
-  delay = 0,
-  direction = "up",
-}) {
+const MotionWrapper = ({ children, delay = 0, direction = "up" }) => {
   const dirs = {
     up: { hidden: { opacity: 0, y: 150 }, visible: { opacity: 1, y: 0 } },
     down: { hidden: { opacity: 0, y: -150 }, visible: { opacity: 1, y: 0 } },
@@ -32,4 +28,6 @@ export default function MotionWrapper({
       {children}
     </motion.div>
   );
-}
+};
+
+export default MotionWrapper;
