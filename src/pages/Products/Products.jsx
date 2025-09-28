@@ -1,16 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 // Layout
 import Navbar from "../../layout/Navbar/Navbar";
 import Footer from "../../layout/Footer/Footer";
 
 // Common components
-import SearchBar from "../../components/common/SearchBar";
-import RatingModal from "../../components/common/RatingModal";
-import Controls from "../../components/common/Controls";
-import GameCard from "../../components/common/GameCard";
-import Pagination from "../../components/common/Pagination";
+import {
+  SearchBar,
+  RatingModal,
+  Controls,
+  GameCard,
+  Pagination,
+} from "../../components/common";
 
 // Hooks
 import {
@@ -21,6 +23,7 @@ import {
   useDocumentTitle,
   useHandlers,
   useLogic,
+  useInViewAnimation,
 } from "../../hooks";
 
 // UI
@@ -37,63 +40,10 @@ import {
 // Icons
 import { ArrowUp, Calendar, Users, Star, Heart, Gamepad2 } from "lucide-react";
 
-// Custom hook for in-view animation
-const useInViewAnimation = (items = [], batchSize = 4) => {
-  const [visibleItems, setVisibleItems] = useState(new Set());
-  const [containerRef, setContainerRef] = useState(null);
-
-  useEffect(() => {
-    if (!items.length || !containerRef) {
-      setVisibleItems(new Set());
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const gameId = entry.target.dataset.id;
-            if (gameId) {
-              setVisibleItems((prev) => new Set([...prev, gameId]));
-              observer.unobserve(entry.target);
-            }
-          }
-        });
-      },
-      {
-        threshold: 0.1,
-        rootMargin: "50px 0px",
-      }
-    );
-
-    // Small delay to ensure DOM is ready
-    const timeoutId = setTimeout(() => {
-      const children = containerRef.querySelectorAll("[data-id]");
-
-      // Show first batch immediately
-      children.forEach((child, index) => {
-        const gameId = child.dataset.id;
-        if (!gameId) return;
-
-        if (index < batchSize) {
-          setVisibleItems((prev) => new Set([...prev, gameId]));
-        } else {
-          observer.observe(child);
-        }
-      });
-    }, 100);
-
-    return () => {
-      clearTimeout(timeoutId);
-      observer.disconnect();
-    };
-  }, [items, batchSize, containerRef]);
-
-  return { containerRef: setContainerRef, visibleItems };
-};
-
 const Products = () => {
   useDocumentTitle("Products | PlayGuide");
+
+  const location = useLocation();
 
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -170,6 +120,15 @@ const Products = () => {
     },
     [openRatingModal]
   );
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const genreFromQuery = params.get("genre");
+
+    if (genreFromQuery && gameData?.setSelectedGenre) {
+      gameData.setSelectedGenre(genreFromQuery);
+    }
+  }, [location.search, gameData]);
 
   // Show scroll-to-top after 300px
   useEffect(() => {
