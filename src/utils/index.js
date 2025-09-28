@@ -39,7 +39,7 @@ export {
 } from "./searchUtils";
 
 // Icon utilities
-export { getGenreIcon, getPlatformIcon } from "./iconUtils";
+export { getPlatformIcon } from "./iconUtils";
 
 // Genre constants
 export { genres } from "./searchUtils";
