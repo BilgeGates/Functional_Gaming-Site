@@ -1,25 +1,4 @@
-import {
-  Map,
-  Castle,
-  Brain,
-  Trophy,
-  Target,
-  Shield,
-  Users,
-  Palette,
-  Zap,
-  Ghost,
-  Puzzle,
-  Sword,
-  Monitor,
-  Gamepad2,
-  Smartphone,
-  Apple,
-  Cpu,
-  Tv,
-  Joystick,
-  HardDrive,
-} from "lucide-react";
+import { Monitor, Gamepad2, Cpu, Tv, Joystick, HardDrive } from "lucide-react";
 
 import {
   FaWindows,
@@ -43,32 +22,6 @@ import {
   SiMacos,
   SiIos,
 } from "react-icons/si";
-
-/**
- * Genre icon mapping
- * Return React component or null if not found
- */
-export const getGenreIcon = (genreName) => {
-  const icons = {
-    Action: Sword,
-    Adventure: Map,
-    RPG: Castle,
-    Strategy: Brain,
-    Sports: Trophy,
-    Racing: Target,
-    Shooter: Target,
-    Simulation: Brain,
-    Puzzle: Puzzle,
-    Fighting: Shield,
-    Horror: Ghost,
-    Platformer: Users,
-    Indie: Palette,
-    MMORPG: Castle,
-    "Battle Royale": Zap,
-  };
-
-  return icons[genreName] || null;
-};
 
 /**
  * Platform icon mapping
