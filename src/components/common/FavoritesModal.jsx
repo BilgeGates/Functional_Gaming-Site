@@ -15,7 +15,6 @@ const FavoritesModal = ({
   isGamePinned,
   getUserRating,
   openRatingModal,
-  formatDte, // ❌ likely typo → you can remove or replace with formatDate
 }) => {
   const modalRef = useRef(null);
 
