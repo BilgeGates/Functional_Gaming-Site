@@ -12,12 +12,11 @@ import {
   formatReviewsCount,
   getMetacriticColor,
   getAgeRating,
-  getGenreIcon,
   getPlatformIcon,
   getRatingColor,
 } from "../../utils";
 
-import { ErrorMessage } from "../../components/ui/ErrorMessage";
+import { ErrorMessage, GenreBadge } from "../../components/ui";
 
 import {
   Star,
@@ -243,23 +242,8 @@ const ProductDetails = () => {
                         Genres
                       </h3>
                       <div className="flex flex-wrap gap-3">
-                        {genres.map((genre, index) => {
-                          const GenreIcon = getGenreIcon(genre.name);
-                          return (
-                            <span
-                              key={genre.id}
-                              className={`inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${
-                                index % 3 === 0
-                                  ? "from-blue-600 to-blue-700"
-                                  : index % 3 === 1
-                                  ? "from-purple-600 to-purple-700"
-                                  : "from-cyan-600 to-cyan-700"
-                              } text-white text-sm rounded-full font-medium hover:scale-105 transform transition-all duration-300 cursor-default shadow-lg`}
-                            >
-                              {GenreIcon && <GenreIcon className="w-4 h-4" />}
-                              {genre.name}
-                            </span>
-                          );
+                        {genres.map((genre) => {
+                          return <GenreBadge genre={genre} variant="solid" />;
                         })}
                       </div>
                     </div>
@@ -328,7 +312,7 @@ const ProductDetails = () => {
                       (game.description_raw || game.description).length >
                         400 && (
                         <button
-                          className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white rounded-xl font-medium hover:from-blue-700 hover:via-purple-700 hover:to-blue-800 transform hover:-translate-y-1 hover:scale-105 transition-all duration-300 shadow-lg"
+                          className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-500 to-sky-400 hover:from-indigo-600 hover:to-sky-500 text-white rounded-xl font-medium  transform hover:-translate-y-1 hover:scale-105 transition-all duration-300 shadow-lg"
                           onClick={() =>
                             setShowFullDescription(!showFullDescription)
                           }
