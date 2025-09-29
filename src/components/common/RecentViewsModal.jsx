@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from "react";
-import { Clock, X, Star, Heart, Search } from "lucide-react";
+import { useRef, useEffect } from "react";
+import { Clock, X, Star, Heart, Search, Trash2 } from "lucide-react";
 
 const RecentViewsModal = ({
   show,
@@ -12,6 +12,7 @@ const RecentViewsModal = ({
   openRatingModal,
   toggleFavorite,
   isGameFavorited,
+  removeFromRecentViews,
 }) => {
   const modalRef = useRef(null);
 
@@ -157,6 +158,17 @@ const RecentViewsModal = ({
                           getUserRating(game.id) > 0 ? "text-yellow-500" : ""
                         }
                       />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromRecentViews(game.id);
+                      }}
+                      className="p-1.5 sm:p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                      title="Remove from recent views"
+                      aria-label={`Remove ${game.name} from recent views`}
+                    >
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 </div>
