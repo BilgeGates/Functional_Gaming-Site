@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import useLocalStorage from "./useLocalStorage";
+import { useLocalStorage } from "./";
 
 const useRecentViews = () => {
   const [recentViews, setRecentViews] = useLocalStorage("recentViews", []);
@@ -59,27 +59,25 @@ const useRecentViews = () => {
     [setRecentViews]
   );
 
+  const removeFromRecentViews = useCallback(
+    (gameId) => {
+      setRecentViews((prev) => {
+        const currentViews = Array.isArray(prev) ? prev : [];
+        return currentViews.filter((view) => view.id !== gameId);
+      });
+    },
+    [setRecentViews]
+  );
+
   const clearRecentViews = useCallback(() => {
     setRecentViews([]);
   }, [setRecentViews]);
-
-  const debugRecentViews = useCallback(() => {
-    console.log(
-      "Recent Views Debug:",
-      recentViews.map((game) => ({
-        name: game.name,
-        viewedAt: game.viewedAt,
-        viewedAtType: typeof game.viewedAt,
-        formattedDate: new Date(game.viewedAt).toString(),
-      }))
-    );
-  }, [recentViews]);
 
   return {
     recentViews,
     addToRecentViews,
     clearRecentViews,
-    debugRecentViews, // Debug üçün
+    removeFromRecentViews,
   };
 };
 
