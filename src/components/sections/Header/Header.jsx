@@ -139,6 +139,7 @@ const Header = () => {
         openRatingModal={openRatingModal}
         toggleFavorite={favorites.toggleFavorite}
         isGameFavorited={favorites.isGameFavorited}
+        removeFromRecentViews={recentViews.removeFromRecentViews}
       />
 
       <HeroSection
