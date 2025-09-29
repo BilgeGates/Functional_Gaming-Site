@@ -1,11 +1,19 @@
 import { useCallback } from "react";
-import useLocalStorage from "./useLocalStorage";
+
+import { useLocalStorage, useRatingViews } from "./";
 
 const useRating = () => {
   const [gameRatings, setGameRatings] = useLocalStorage("gameRatings", {});
 
+  const {
+    ratingViews,
+    toggleRating,
+    removeRating: removeFromViews,
+    isGameRated,
+  } = useRatingViews();
+
   const submitRating = useCallback(
-    (gameId, rating) => {
+    (gameId, rating, gameData = null) => {
       setGameRatings((prev) => ({
         ...prev,
         [gameId]: {
@@ -13,8 +21,12 @@ const useRating = () => {
           ratedAt: new Date().toISOString(),
         },
       }));
+
+      if (gameData && !isGameRated(gameId)) {
+        toggleRating(gameData);
+      }
     },
-    [setGameRatings]
+    [setGameRatings, toggleRating, isGameRated]
   );
 
   const getUserRating = useCallback(
@@ -33,13 +45,15 @@ const useRating = () => {
 
   const removeRating = useCallback(
     (gameId) => {
+      // Həm rating-i, həm də views-dən sil
       setGameRatings((prev) => {
         const updated = { ...prev };
         delete updated[gameId];
         return updated;
       });
+      removeFromViews(gameId);
     },
-    [setGameRatings]
+    [setGameRatings, removeFromViews]
   );
 
   const getAllRatings = useCallback(() => {
@@ -48,6 +62,7 @@ const useRating = () => {
 
   return {
     gameRatings,
+    ratingViews,
     submitRating,
     getUserRating,
     getRatingColor,
