@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -8,9 +8,12 @@ import {
   useRating,
 } from "../../../hooks";
 
-import FavoritesModal from "../../../components/common/FavoritesModal";
-import RecentViewsModal from "../../../components/common/RecentViewsModal";
-import RatingModal from "../../../components/common/RatingModal";
+import {
+  FavoritesModal,
+  RecentViewsModal,
+  RatingModal,
+  RatingViewsModal,
+} from "../../../components/common";
 
 import HeroSection from "./HeroSection";
 
@@ -22,6 +25,7 @@ const Header = () => {
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [showRecentModal, setShowRecentModal] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
+  const [showRatingViewsModal, setShowRatingViewsModal] = useState(false);
   const [ratingGameData, setRatingGameData] = useState(null);
 
   const gameData = useGameData();
@@ -34,6 +38,7 @@ const Header = () => {
     navigate(`/products/${game.id}`);
     setShowFavoritesModal(false);
     setShowRecentModal(false);
+    setShowRatingViewsModal(false);
   };
 
   const openRatingModal = (game, event) => {
@@ -44,7 +49,8 @@ const Header = () => {
 
   const submitRating = (ratingValue) => {
     if (ratingGameData) {
-      rating.submitRating(ratingGameData.id, ratingValue);
+      // gameData-nı üçüncü parametr kimi göndər
+      rating.submitRating(ratingGameData.id, ratingValue, ratingGameData);
       setShowRatingModal(false);
       setRatingGameData(null);
     }
@@ -58,8 +64,10 @@ const Header = () => {
     },
     {
       icon: Star,
-      label: "RAWG DB",
+      label: `${rating.ratingViews?.length ?? 0} rated`,
       color: "text-yellow-400",
+      onClick: () => setShowRatingViewsModal(true),
+      clickable: true,
     },
     {
       icon: Heart,
@@ -91,6 +99,16 @@ const Header = () => {
         game={ratingGameData}
         onSubmitRating={submitRating}
         currentRating={rating.getUserRating(ratingGameData?.id)}
+      />
+
+      <RatingViewsModal
+        show={showRatingViewsModal}
+        onClose={() => setShowRatingViewsModal(false)}
+        ratingViews={rating.ratingViews}
+        removeRating={rating.removeRating}
+        handleGameSelect={handleGameSelect}
+        toggleFavorite={favorites.toggleFavorite}
+        isGameFavorited={favorites.isGameFavorited}
       />
 
       <FavoritesModal
