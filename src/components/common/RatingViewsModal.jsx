@@ -32,10 +32,8 @@ const RatingViewsModal = ({
 
   if (!show) return null;
 
-  // Array olmadığı halda boş array istifadə et
   const ratingsArray = Array.isArray(ratingViews) ? ratingViews : [];
 
-  // Son əlavə olunanlar əvvəl görünsün
   const sortedRatings = [...ratingsArray].sort(
     (a, b) => new Date(b.released) - new Date(a.released)
   );
