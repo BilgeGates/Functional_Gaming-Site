@@ -11,3 +11,4 @@ export { default as useDocumentTitle } from "./useDocumentTitle";
 export { default as useHandlers } from "./useHandlers";
 export { default as useLogic } from "./useLogic";
 export { default as useInViewAnimation } from "./useInViewAnimation";
+export { default as useRatingViews } from "./useRatingViews";
