@@ -101,7 +101,7 @@ const RatingViewsModal = ({
                 return (
                   <div
                     key={game.id}
-                    className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl hover:bg-gray-50 transition-all duration-200"
+                    className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-all duration-200"
                   >
                     <img
                       src={
