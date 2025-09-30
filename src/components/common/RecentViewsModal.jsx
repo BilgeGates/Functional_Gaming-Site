@@ -51,7 +51,7 @@ const RecentViewsModal = ({
               {recentViews.length > 0 && (
                 <button
                   onClick={clearRecentViews}
-                  className="px-2 py-1 sm:px-3 sm:py-1 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs sm:text-sm transition-colors"
+                  className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-red-500 bg-opacity-90 hover:bg-opacity-100 text-white text-xs sm:text-sm font-medium transition-all shadow-md hover:shadow-lg"
                 >
                   Clear All
                 </button>
@@ -114,7 +114,7 @@ const RecentViewsModal = ({
                       {game.name}
                     </h4>
                     <p className="text-xs sm:text-sm text-gray-500 truncate">
-                      Viewed {formatTimeAgo(game.released)}
+                      Viewed {formatTimeAgo(game.viewedAt)}
                     </p>
                   </div>
                   <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
