@@ -9,3 +9,4 @@ export { default as SearchBar } from "./SearchBar";
 export { default as SearchGameItem } from "./SearchGameItem";
 export { default as MotionWrapper } from "./MotionWrapper";
 export { default as RatingViewsModal } from "./RatingViewsModal";
+export { default as Stats } from "./Stats";
