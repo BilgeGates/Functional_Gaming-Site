@@ -12,6 +12,10 @@ import {
   Controls,
   GameCard,
   Pagination,
+  Stats,
+  RatingViewsModal,
+  FavoritesModal,
+  RecentViewsModal,
 } from "../../components/common";
 
 // Hooks
@@ -38,7 +42,16 @@ import {
 } from "../../utils";
 
 // Icons
-import { ArrowUp, Calendar, Users, Star, Heart, Gamepad2 } from "lucide-react";
+import {
+  ArrowUp,
+  Calendar,
+  Users,
+  Star,
+  Heart,
+  Gamepad2,
+  TrendingUp,
+  Search,
+} from "lucide-react";
 
 const Products = () => {
   useDocumentTitle("Products | PlayGuide");
@@ -46,6 +59,9 @@ const Products = () => {
   const location = useLocation();
 
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showFavoritesModal, setShowFavoritesModal] = useState(false);
+  const [showRecentModal, setShowRecentModal] = useState(false);
+  const [showRatingViewsModal, setShowRatingViewsModal] = useState(false);
 
   // Hook data
   const gameData = useGameData();
@@ -153,6 +169,55 @@ const Products = () => {
   };
 
   const handleGameClick = (game) => addToRecentViews(game);
+
+  const handleGameSelect = (game) => {
+    addToRecentViews(game);
+    setShowFavoritesModal(false);
+    setShowRecentModal(false);
+    setShowRatingViewsModal(false);
+  };
+
+  // Stats configuration
+  const stats = [
+    {
+      icon: TrendingUp,
+      label: `${gameData?.allGames?.length ?? 0} games`,
+      color: "text-cyan-400",
+      bgColor: "bg-cyan-500/10",
+      borderColor: "border-cyan-500/20",
+      className: "cursor-default pointer-events-none select-none",
+    },
+    {
+      icon: Star,
+      label: `${rating?.ratingViews?.length ?? 0} rated`,
+      color: "text-yellow-400",
+      bgColor: "bg-yellow-500/10",
+      borderColor: "border-yellow-500/20",
+      hoverBg: "hover:bg-yellow-500/20",
+      onClick: () => setShowRatingViewsModal(true),
+      clickable: true,
+    },
+    {
+      icon: Heart,
+      label: `${favorites?.favorites?.length ?? 0} favorites`,
+      color: "text-red-400",
+      bgColor: "bg-red-500/10",
+      borderColor: "border-red-500/20",
+      hoverBg: "hover:bg-red-500/20",
+      onClick: () => setShowFavoritesModal(true),
+      clickable: true,
+    },
+    {
+      icon: Search,
+      label: `${recentViews?.recentViews?.length ?? 0} recent`,
+      color: "text-blue-400",
+      bgColor: "bg-blue-500/10",
+      borderColor: "border-blue-500/20",
+      hoverBg: "hover:bg-blue-500/20",
+      onClick: () => setShowRecentModal(true),
+      clickable: true,
+    },
+  ];
 
   // Animated List Game Card Component
   const AnimatedListGameCard = ({ game, index }) => {
@@ -370,51 +435,46 @@ const Products = () => {
 
       {/* Main Section */}
       <section className="container mx-auto max-w-7xl px-6 pb-32 -mt-10 relative z-20">
-        {/* Search + Controls - Responsive Layout */}
-        <div className="mb-8 space-y-4">
-          {/* Search Bar - Full Width */}
-          <div className="w-full">
-            <SearchBar
-              searchTerm={searchTerm}
-              setSearchTerm={gameData?.setSearchTerm}
-              showFilters={showFilters}
-              setShowFilters={setShowFilters}
-              selectedGenre={selectedGenre}
-              setSelectedGenre={gameData?.setSelectedGenre}
-              sortBy={sortBy}
-              setSortBy={gameData?.setSortBy}
-              genres={gameData?.genres || []}
-              clearSearch={combinedHandleClearSearch}
-              showGenreTags={false}
-              enableDropdown={false}
-            />
-          </div>
+        {/* Search Bar */}
+        <div className="mb-6">
+          <SearchBar
+            searchTerm={searchTerm}
+            setSearchTerm={gameData?.setSearchTerm}
+            showFilters={showFilters}
+            setShowFilters={setShowFilters}
+            selectedGenre={selectedGenre}
+            setSelectedGenre={gameData?.setSelectedGenre}
+            sortBy={sortBy}
+            setSortBy={gameData?.setSortBy}
+            genres={gameData?.genres || []}
+            clearSearch={combinedHandleClearSearch}
+            showGenreTags={false}
+            enableDropdown={false}
+          />
+        </div>
 
-          {/* Controls + Results - Improved Mobile Layout */}
-          <div className="flex flex-col space-y-4">
-            {/* Search Results Count */}
-            <div className="text-sm text-gray-400 order-1">
-              {searchTerm ? (
-                <span>
-                  Found {displayedGames?.length || 0} games for "{searchTerm}"
-                </span>
-              ) : (
-                <span>Showing {displayedGames?.length || 0} games</span>
-              )}
-            </div>
+        {/* Stats Section */}
+        <div className="mb-8">
+          <Stats stats={stats} />
+        </div>
 
-            {/* View Mode Controls */}
-            <div className="order-2 w-full">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
-                <Controls
-                  sortBy={sortBy}
-                  handleSortChange={handleSortChange}
-                  viewMode={viewMode}
-                  setViewMode={setViewMode}
-                />
-              </div>
-            </div>
+        {/* Controls */}
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="text-sm text-gray-400">
+            {searchTerm ? (
+              <span>
+                Found {displayedGames?.length || 0} games for "{searchTerm}"
+              </span>
+            ) : (
+              <span>Showing {displayedGames?.length || 0} games</span>
+            )}
           </div>
+          <Controls
+            sortBy={sortBy}
+            handleSortChange={handleSortChange}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+          />
         </div>
 
         {/* Loading */}
@@ -546,7 +606,7 @@ const Products = () => {
         </button>
       )}
 
-      {/* Rating Modal */}
+      {/* Modals */}
       {showRatingModal && selectedGame && (
         <RatingModal
           show={showRatingModal}
@@ -559,6 +619,47 @@ const Products = () => {
           currentRating={getUserRating(selectedGame.id)}
         />
       )}
+
+      <RatingViewsModal
+        show={showRatingViewsModal}
+        onClose={() => setShowRatingViewsModal(false)}
+        ratingViews={rating.ratingViews}
+        removeRating={rating.removeRating}
+        handleGameSelect={handleGameSelect}
+        toggleFavorite={favorites.toggleFavorite}
+        isGameFavorited={favorites.isGameFavorited}
+      />
+
+      <FavoritesModal
+        show={showFavoritesModal}
+        onClose={() => setShowFavoritesModal(false)}
+        favorites={favorites.favorites}
+        toggleFavorite={favorites.toggleFavorite}
+        pinnedFavorites={favorites.pinnedFavorites}
+        togglePin={favorites.togglePin}
+        isGamePinned={favorites.isGamePinned}
+        removeFavorite={favorites.removeFavorite}
+        handleGameSelect={handleGameSelect}
+        openRatingModal={openRatingModal}
+        getUserRating={rating.getUserRating}
+        getRatingColor={rating.getRatingColor}
+        formatDate={gameData.formatDate}
+        getSortedFavorites={favorites.getSortedFavorites}
+      />
+
+      <RecentViewsModal
+        show={showRecentModal}
+        onClose={() => setShowRecentModal(false)}
+        recentViews={recentViews.recentViews}
+        clearRecentViews={recentViews.clearRecentViews}
+        handleGameSelect={handleGameSelect}
+        formatTimeAgo={gameData.formatTimeAgo}
+        getUserRating={rating.getUserRating}
+        openRatingModal={openRatingModal}
+        toggleFavorite={favorites.toggleFavorite}
+        isGameFavorited={favorites.isGameFavorited}
+        removeFromRecentViews={recentViews.removeFromRecentViews}
+      />
 
       <Footer />
     </>
