@@ -22,8 +22,17 @@ const useRating = () => {
         },
       }));
 
-      if (gameData && !isGameRated(gameId)) {
-        toggleRating(gameData);
+      if (gameData) {
+        if (!isGameRated(gameId)) {
+          toggleRating(gameData);
+        }
+      } else {
+        console.warn(
+          `submitRating: gameData not provided for gameId ${gameId}`
+        );
+        if (!isGameRated(gameId)) {
+          toggleRating({ id: gameId, name: "Unknown Game" });
+        }
       }
     },
     [setGameRatings, toggleRating, isGameRated]
@@ -45,7 +54,6 @@ const useRating = () => {
 
   const removeRating = useCallback(
     (gameId) => {
-      // Həm rating-i, həm də views-dən sil
       setGameRatings((prev) => {
         const updated = { ...prev };
         delete updated[gameId];
