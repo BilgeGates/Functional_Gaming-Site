@@ -6,6 +6,7 @@ import {
   useFavorites,
   useRecentViews,
   useRating,
+  useHandlers,
 } from "../../../hooks";
 
 import {
@@ -24,14 +25,21 @@ const Header = () => {
 
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [showRecentModal, setShowRecentModal] = useState(false);
-  const [showRatingModal, setShowRatingModal] = useState(false);
   const [showRatingViewsModal, setShowRatingViewsModal] = useState(false);
-  const [ratingGameData, setRatingGameData] = useState(null);
 
   const gameData = useGameData();
   const favorites = useFavorites();
   const recentViews = useRecentViews();
   const rating = useRating();
+
+  const {
+    showRatingModal,
+    selectedGame,
+    setShowRatingModal,
+    setSelectedGame,
+    openRatingModal,
+    handleRatingSubmit,
+  } = useHandlers(gameData, recentViews.addToRecentViews, rating.submitRating);
 
   const handleGameSelect = (game) => {
     recentViews.addToRecentViews(game);
@@ -41,25 +49,12 @@ const Header = () => {
     setShowRatingViewsModal(false);
   };
 
-  const openRatingModal = (game, event) => {
-    event?.stopPropagation();
-    setRatingGameData(game);
-    setShowRatingModal(true);
-  };
-
-  const submitRating = (ratingValue) => {
-    if (ratingGameData) {
-      rating.submitRating(ratingGameData.id, ratingValue, ratingGameData);
-      setShowRatingModal(false);
-      setRatingGameData(null);
-    }
-  };
-
   const stats = [
     {
       icon: TrendingUp,
       label: `${gameData.allGames?.length ?? 0} games`,
       color: "text-cyan-400",
+      clickable: false,
     },
     {
       icon: Star,
@@ -94,10 +89,13 @@ const Header = () => {
 
       <RatingModal
         show={showRatingModal}
-        onClose={() => setShowRatingModal(false)}
-        game={ratingGameData}
-        onSubmitRating={submitRating}
-        currentRating={rating.getUserRating(ratingGameData?.id)}
+        onClose={() => {
+          setShowRatingModal(false);
+          setSelectedGame(null);
+        }}
+        game={selectedGame}
+        onSubmitRating={handleRatingSubmit}
+        currentRating={rating.getUserRating(selectedGame?.id)}
       />
 
       <RatingViewsModal
