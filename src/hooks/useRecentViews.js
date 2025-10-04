@@ -21,7 +21,7 @@ const useRecentViews = () => {
           console.log("Updating old recent views data format...");
           const updatedViews = recentViews.map((game) => ({
             ...game,
-            viewedAt: Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000, // Son 7 gün ərzində random
+            viewedAt: Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000,
           }));
           setRecentViews(updatedViews);
         }
@@ -33,28 +33,47 @@ const useRecentViews = () => {
 
   const addToRecentViews = useCallback(
     (gameData) => {
-      const processedGame = {
-        id: gameData.id,
-        name: gameData.name,
-        background_image: gameData.background_image,
-        rating: gameData.rating,
-        released: gameData.released,
-        genres: gameData.genres || [],
-        metacritic: gameData.metacritic,
-        viewedAt: Date.now(),
-      };
+      if (!gameData) {
+        console.warn("addToRecentViews: gameData is null or undefined");
+        return;
+      }
 
-      console.log(
-        "Adding to recent views:",
-        processedGame.name,
-        "viewedAt:",
-        processedGame.viewedAt
-      );
+      if (!gameData.id) {
+        console.warn("addToRecentViews: gameData.id is missing", gameData);
+        return;
+      }
 
-      setRecentViews((prev) => {
-        const filtered = prev.filter((item) => item.id !== gameData.id);
-        return [processedGame, ...filtered].slice(0, 100);
-      });
+      try {
+        const processedGame = {
+          id: gameData.id,
+          name: gameData.name || "Unknown Game",
+          background_image: gameData.background_image || null,
+          rating: gameData.rating || 0,
+          released: gameData.released || null,
+          genres: Array.isArray(gameData.genres) ? gameData.genres : [],
+          metacritic: gameData.metacritic || null,
+          viewedAt: Date.now(),
+        };
+
+        console.log(
+          "✅ Adding to recent views:",
+          processedGame.name,
+          "| ID:",
+          processedGame.id,
+          "| Timestamp:",
+          new Date(processedGame.viewedAt).toLocaleString()
+        );
+
+        setRecentViews((prev) => {
+          const currentViews = Array.isArray(prev) ? prev : [];
+          const filtered = currentViews.filter(
+            (item) => item.id !== gameData.id
+          );
+          return [processedGame, ...filtered].slice(0, 100);
+        });
+      } catch (error) {
+        console.error("Error adding to recent views:", error);
+      }
     },
     [setRecentViews]
   );
@@ -74,7 +93,7 @@ const useRecentViews = () => {
   }, [setRecentViews]);
 
   return {
-    recentViews,
+    recentViews: Array.isArray(recentViews) ? recentViews : [],
     addToRecentViews,
     clearRecentViews,
     removeFromRecentViews,
