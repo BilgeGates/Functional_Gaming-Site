@@ -185,7 +185,7 @@ const Products = () => {
       color: "text-cyan-400",
       bgColor: "bg-cyan-500/10",
       borderColor: "border-cyan-500/20",
-      className: "cursor-default pointer-events-none select-none",
+      clickable: false,
     },
     {
       icon: Star,
@@ -453,22 +453,13 @@ const Products = () => {
           />
         </div>
 
-        {/* Stats Section */}
+        {/* Stats Section - Headerdəki stats indi buradadır */}
         <div className="mb-8">
-          <Stats stats={stats} />
+          <Stats stats={stats} variant="products" />
         </div>
 
-        {/* Controls */}
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="text-sm text-gray-400">
-            {searchTerm ? (
-              <span>
-                Found {displayedGames?.length || 0} games for "{searchTerm}"
-              </span>
-            ) : (
-              <span>Showing {displayedGames?.length || 0} games</span>
-            )}
-          </div>
+        {/* Controls - Sağ tərəfə düzəldilmiş */}
+        <div className="mb-6 flex justify-end">
           <Controls
             sortBy={sortBy}
             handleSortChange={handleSortChange}
