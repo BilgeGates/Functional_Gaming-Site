@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import SearchBar from "../../../components/common/SearchBar";
+import Stats from "../../../components/common/Stats";
 
 import { Gamepad2, Star, Users } from "lucide-react";
 
@@ -96,7 +97,6 @@ const HeroSection = ({
                   Welcome to Play Guide
                 </span>
               </div>
-
               {/* Main headline */}
               <h1 className="text-5xl lg:text-7xl font-bold text-white leading-tight select-none">
                 Best{" "}
@@ -113,14 +113,12 @@ const HeroSection = ({
                 </span>{" "}
                 Site Ever!
               </h1>
-
               {/* Short description */}
               <p className="text-gray-300 text-lg leading-relaxed max-w-lg">
                 Discover amazing games from our curated collection. Search,
                 filter, and find your next favorite game with advanced search
                 capabilities.
               </p>
-
               {/* Loading state */}
               {loading && (
                 <div className="flex items-center gap-2 text-cyan-400">
@@ -128,7 +126,6 @@ const HeroSection = ({
                   <span>Loading games...</span>
                 </div>
               )}
-
               {/* Search bar with filters, favorites, rating modal, etc. */}
               <SearchBar
                 searchTerm={searchTerm}
@@ -157,26 +154,7 @@ const HeroSection = ({
                 onViewAllResults={handleViewAllResults}
                 limitResults={true}
               />
-
-              {/* Game statistics (clickable shortcuts) */}
-              {!loading && (
-                <div className="flex items-center gap-6 text-sm text-gray-300 flex-wrap">
-                  {stats.map((stat, index) => (
-                    <div
-                      key={index}
-                      className={`flex items-center gap-2 ${
-                        stat.clickable
-                          ? "cursor-pointer text-white"
-                          : "disabled:bg-gray-400 disabled:cursor-not-allowed select-none opacity-65"
-                      }`}
-                      onClick={stat.onClick}
-                    >
-                      <stat.icon size={16} className={stat.color} />
-                      <span>{stat.label}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+              {!loading && <Stats stats={stats} variant="header" />}
             </div>
           </div>
 
