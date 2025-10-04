@@ -35,24 +35,34 @@ const useHandlers = (gameData, addToRecentViews, submitRating) => {
 
   // -------------------------------
   // Handler: Open rating modal for a game
-  // Stops event propagation if called from a nested click
+  // CRITICAL: Oyunu recent views-ə əlavə et modal açılanda
   // -------------------------------
-  const openRatingModal = useCallback((game, e) => {
-    if (e) e.stopPropagation(); // Prevent parent click triggers
-    if (game) {
-      setSelectedGame(game); // Set the game to be rated
-      setShowRatingModal(true); // Show modal
-    }
-  }, []);
+  const openRatingModal = useCallback(
+    (game, e) => {
+      if (e) {
+        e.stopPropagation(); // Prevent parent click triggers
+        e.preventDefault(); // Prevent default action
+      }
+
+      if (game) {
+        if (addToRecentViews) {
+          addToRecentViews(game);
+        }
+
+        setSelectedGame(game); // Set the game to be rated
+        setShowRatingModal(true); // Show modal
+      }
+    },
+    [addToRecentViews] // Depend on addToRecentViews function
+  );
 
   // -------------------------------
   // Handler: Submit a rating for the selected game
-  // Closes modal and clears selected game after submission
   // -------------------------------
   const handleRatingSubmit = useCallback(
     (rating) => {
       if (selectedGame && submitRating) {
-        submitRating(selectedGame.id, rating); // Call parent submit function
+        submitRating(selectedGame.id, rating, selectedGame);
         setShowRatingModal(false); // Close modal
         setSelectedGame(null); // Reset selected game
       }
