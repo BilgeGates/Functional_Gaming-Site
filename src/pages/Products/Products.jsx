@@ -9,7 +9,6 @@ import Footer from "../../layout/Footer/Footer";
 import {
   SearchBar,
   RatingModal,
-  Controls,
   GameCard,
   Pagination,
   Stats,
@@ -90,9 +89,9 @@ const Products = () => {
     displayedGames,
     currentPage,
     viewMode,
+    setViewMode,
     totalPages,
     setCurrentPage,
-    setViewMode,
     handleFilterClear,
   } = useLogic(gameData, searchResults, showResults);
 
@@ -107,7 +106,6 @@ const Products = () => {
     setSelectedGame,
     openRatingModal,
     handleRatingSubmit,
-    handleSortChange,
     handleClearSearch,
   } = useHandlers(gameData, addToRecentViews, submitRating);
 
@@ -185,6 +183,9 @@ const Products = () => {
       color: "text-cyan-400",
       bgColor: "bg-cyan-500/10",
       borderColor: "border-cyan-500/20",
+      hoverBg: null,
+      shadow: null,
+      onClick: null,
       clickable: false,
     },
     {
@@ -450,23 +451,16 @@ const Products = () => {
             clearSearch={combinedHandleClearSearch}
             showGenreTags={false}
             enableDropdown={false}
-          />
-        </div>
-
-        {/* Stats Section - Headerdəki stats indi buradadır */}
-        <div className="mb-8">
-          <Stats stats={stats} variant="products" />
-        </div>
-
-        {/* Controls - Sağ tərəfə düzəldilmiş */}
-        <div className="mb-6 flex justify-end">
-          <Controls
-            sortBy={sortBy}
-            handleSortChange={handleSortChange}
             viewMode={viewMode}
             setViewMode={setViewMode}
           />
         </div>
+
+        <div className="mb-8">
+          <Stats stats={stats} variant="products" />
+        </div>
+
+        <div className="mb-6 flex justify-end"></div>
 
         {/* Loading */}
         {gameData?.loading && <LoadingSpinner />}
