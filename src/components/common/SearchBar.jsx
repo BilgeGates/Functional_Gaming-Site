@@ -1,8 +1,8 @@
 import { useRef, useCallback } from "react";
 
-import SearchGameItem from "./SearchGameItem";
+import { SearchGameItem, Controls } from "./";
 
-import { useSearch, useSearchKeyboard } from "../../hooks";
+import { useSearch, useSearchKeyboard, useHandlers } from "../../hooks";
 
 import { GenreBadge, ExploreButton } from "../ui";
 
@@ -31,7 +31,9 @@ const SearchBar = ({
   formatDate,
   genres,
   onViewAllResults,
-  showGenreTags = true, // New prop to control genre tags visibility
+  viewMode: externalViewMode,
+  setViewMode: externalSetViewMode,
+  showGenreTags = true,
 }) => {
   const searchRef = useRef(null);
 
@@ -59,6 +61,10 @@ const SearchBar = ({
     handleResultClick,
   } = useSearch({ handleSearch });
 
+  const { handleSortChange } = useHandlers({
+    setSortBy: setInternalSelectedGenre,
+  });
+
   // External props override internal state if provided
   const currentSearchTerm =
     externalSearchTerm !== undefined ? externalSearchTerm : searchTerm;
@@ -82,6 +88,9 @@ const SearchBar = ({
 
   const displayResultsCount = 5;
   const hasMoreResults = searchResults.length > displayResultsCount;
+
+  const viewMode = externalViewMode;
+  const setViewMode = externalSetViewMode;
 
   // Sort results function - proper sorting logic
   const sortSearchResults = useCallback((results, sortType) => {
@@ -426,7 +435,7 @@ const SearchBar = ({
         <div
           className={`overflow-hidden transition-all duration-500 ease-in-out ${
             currentShowFilters
-              ? "max-h-56 sm:max-h-40 opacity-100 mb-2"
+              ? "max-h-56 sm:max-h-54 opacity-100 mb-2"
               : "max-h-0 opacity-0"
           }`}
         >
@@ -443,11 +452,21 @@ const SearchBar = ({
             role="region"
             aria-label="Search filters"
           >
+            <div className="flex items-center justify-between">
+              <h2 className=" text-cyan-300">Filters Panel </h2>
+              <Controls
+                sortBy={sortBy}
+                handleSortChange={handleSortChange}
+                viewMode={viewMode}
+                setViewMode={setViewMode}
+              />
+            </div>
+
             <div className="flex flex-col gap-4 sm:flex-row sm:gap-4 sm:pt-4">
               <div className="w-full sm:flex-1">
                 <label
                   htmlFor="genre-select"
-                  className="block text-sm text-gray-300 mb-2"
+                  className="block text-sm text-gray-300 mb-3"
                 >
                   Genre
                 </label>
@@ -529,6 +548,7 @@ const SearchBar = ({
           </div>
         </div>
       </div>
+
       {/* Search Results Dropdown */}
       <div
         className={`absolute top-full left-0 right-0 mt-1 mx-2 sm:mx-0 rounded-tl-xl rounded-bl-xl rounded-tr-md rounded-br-md shadow-2xl border z-[9999]
