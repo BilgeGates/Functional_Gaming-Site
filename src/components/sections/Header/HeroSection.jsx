@@ -81,24 +81,21 @@ const HeroSection = ({
   };
 
   return (
-    <header className="relative z-10 pt-20">
-      <div className="container mx-auto px-6 py-8">
-        <div
-          className="flex flex-col lg:flex-row items-center justify-between min-h-screen lg:min-h-0"
-          style={{ minHeight: "80vh" }}
-        >
+    <header className="relative z-10 pt-16 sm:pt-20">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 py-8 lg:py-12">
           {/* Left side: heading, description, search bar, stats */}
-          <div className="lg:w-1/2 space-y-8">
-            <div className="space-y-4">
+          <div className="w-full lg:w-1/2 space-y-6 sm:space-y-8">
+            <div className="space-y-3 sm:space-y-4">
               {/* Section label with small icon */}
               <div className="flex items-center gap-2 text-cyan-400">
-                <Gamepad2 size={24} />
-                <span className="text-sm font-semibold tracking-wider uppercase">
+                <Gamepad2 className="w-5 h-5 sm:w-6 sm:h-6" />
+                <span className="text-xs sm:text-sm font-semibold tracking-wider uppercase">
                   Welcome to Play Guide
                 </span>
               </div>
               {/* Main headline */}
-              <h1 className="text-5xl lg:text-7xl font-bold text-white leading-tight select-none">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight select-none">
                 Best{" "}
                 <span
                   style={{
@@ -114,7 +111,7 @@ const HeroSection = ({
                 Site Ever!
               </h1>
               {/* Short description */}
-              <p className="text-gray-300 text-lg leading-relaxed max-w-lg">
+              <p className="text-gray-300 text-base sm:text-lg leading-relaxed max-w-full lg:max-w-lg">
                 Discover amazing games from our curated collection. Search,
                 filter, and find your next favorite game with advanced search
                 capabilities.
@@ -159,22 +156,22 @@ const HeroSection = ({
           </div>
 
           {/* Right side: hero image with overlay badges and effects */}
-          <div className="lg:w-1/2 flex justify-center lg:justify-end w-full mt-12 lg:mt-0">
-            <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg">
+          <div className="w-full lg:w-1/2 flex justify-center lg:justify-end">
+            <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg px-4 sm:px-0">
               {/* Hero image (auto-rotating) */}
               <img
                 src={heroImages[currentImageIndex]}
                 alt="Gaming Hero"
-                className="relative w-full h-auto rounded-xl sm:rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-500"
+                className="relative w-full h-auto rounded-lg sm:rounded-xl lg:rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-500"
               />
 
               {/* Hero image navigation dots */}
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+              <div className="absolute bottom-3 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1.5 sm:gap-2">
                 {heroImages.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
+                    className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all ${
                       index === currentImageIndex
                         ? "bg-white"
                         : "bg-white bg-opacity-50"
@@ -186,43 +183,43 @@ const HeroSection = ({
 
               {/* Floating animated gamepad icon */}
               <div
-                className="absolute -bottom-4 -right-4 p-4 rounded-xl shadow-lg animate-bounce"
+                className="absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-4 p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-lg animate-bounce"
                 style={{
                   background:
                     "linear-gradient(45deg, rgb(34, 211, 238), rgb(168, 85, 247))",
                 }}
               >
-                <Gamepad2 size={30} className="text-white" />
+                <Gamepad2 className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
               </div>
 
               {/* Rating badge */}
               <div
-                className="absolute p-3 rounded-lg shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300"
+                className="absolute p-2 sm:p-3 rounded-md sm:rounded-lg shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300"
                 style={{
-                  left: "-32px",
-                  top: "32px",
+                  left: "-16px",
+                  top: "24px",
                   backgroundColor: "rgba(255, 255, 255, 0.1)",
                   backdropFilter: "blur(10px)",
                 }}
               >
-                <div className="flex items-center gap-2 text-white text-sm">
-                  <Star size={16} className="text-yellow-400" />
+                <div className="flex items-center gap-1.5 sm:gap-2 text-white text-xs sm:text-sm">
+                  <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-400" />
                   <span>4.8 Rating</span>
                 </div>
               </div>
 
               {/* Players badge */}
               <div
-                className="absolute p-3 rounded-lg shadow-lg transform -rotate-3 hover:rotate-0 transition-transform duration-300"
+                className="absolute p-2 sm:p-3 rounded-md sm:rounded-lg shadow-lg transform -rotate-3 hover:rotate-0 transition-transform duration-300"
                 style={{
-                  right: "-24px",
-                  top: "33%",
+                  right: "-12px",
+                  top: "30%",
                   backgroundColor: "rgba(255, 255, 255, 0.1)",
                   backdropFilter: "blur(10px)",
                 }}
               >
-                <div className="flex items-center gap-2 text-white text-sm">
-                  <Users size={16} className="text-green-400" />
+                <div className="flex items-center gap-1.5 sm:gap-2 text-white text-xs sm:text-sm">
+                  <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-400" />
                   <span>1M+ Players</span>
                 </div>
               </div>
