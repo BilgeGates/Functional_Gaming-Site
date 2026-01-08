@@ -59,6 +59,7 @@ Built for gamers, streamers, and developers who need **fast, comprehensive, and 
 
 > **Live demo:** Coming soon
 
+<img src='./docs/assets/screenshoot_1.jpg' />
 ---
 
 ## 🚀 Quick Start
