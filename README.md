@@ -97,8 +97,6 @@ npm run build
 
 ## 📁 Project Structure
 
-<details>
-<summary><b>Complete File Tree (Click to expand)</b></summary>
 ```
 playguide/
 │
@@ -217,9 +215,6 @@ playguide/
 ├── 📄 SECURITY.md
 └── 📄 LICENSE
 ```
-
-</details>
-
 ---
 
 ## 🛠️ Technology Stack
