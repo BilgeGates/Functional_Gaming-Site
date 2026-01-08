@@ -1,32 +1,82 @@
-# PlayGuide
+<h1 align="center">🎮 PlayGuide</h1>
 
-A comprehensive game information platform featuring 1000+ games with detailed information, user ratings, and favorites functionality.
+<div align="center">
 
-## Features
+**Comprehensive game information platform with 1000+ games and detailed statistics**
+
+[![React](https://img.shields.io/badge/React-18%2B-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Backend](https://img.shields.io/badge/backend-none-success?style=flat-square)](#)
+[![Privacy](https://img.shields.io/badge/privacy-local--only-blue?style=flat-square)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+
+[Live Demo](#) ·
+[Report Bug](https://github.com/BilgeGates/Functional_Gaming-Site/issues) ·
+[Request Feature](https://github.com/BilgeGates/Functional_Gaming-Site/issues)
+
+</div>
+
+---
+
+## 📖 Table of Contents
+
+- [Overview](#-overview)
+- [Features](#-features)
+- [Demo Screenshots](#-demo--screenshots)
+- [Quick Start](#-quick-start)
+- [Project Structure](#-project-structure)
+- [Technology Stack](#-technology-stack)
+- [Browser Support](#-browser-support)
+- [Game Data](#-game-data)
+- [Security Privacy](#-security--privacy)
+- [Contributing](#-contributing)
+- [FAQ](#-faq)
+- [License](#-license)
+
+---
+
+## 🌟 Overview
+
+PlayGuide is a modern web application for browsing and discovering **1000+ games** with detailed information.  
+Built for gamers, streamers, and developers who need **fast, comprehensive, and customizable** game information at their fingertips.
+
+---
+
+## ✨ Features
 
 - Browse 1000+ games with detailed information
-- View game ratings, Metacritic scores, and genres
+- View ratings, Metacritic scores, and genres
 - Add games to favorites
 - Rate games and submit reviews
-- Search and filter games by name, genre, and platform
+- Advanced search and filtering (by name, genre, platform)
 - View game details, screenshots, and statistics
 - Viewing history and recently viewed games
 - Responsive design for all devices
 
-## Tech Stack
+---
 
-- **React** - UI library
-- **React Router** - Navigation
-- **Tailwind CSS** - Styling
-- **Local Storage** - User data persistence
+## 🖼 Demo & Screenshots
 
-## Installation
+> **Live demo:** Coming soon
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+```bash
+Node.js >= 18
+npm >= 8
+```
+
+### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/playguide.git
+git clone https://github.com/BilgeGates/Functional_Gaming-Site.git
 
 # Navigate to project directory
-cd playguide
+cd Functional_Gaming-Site
 
 # Install dependencies
 npm install
@@ -35,15 +85,34 @@ npm install
 npm start
 ```
 
-Visit `http://localhost:3000` to view the app.
+The application will automatically open at [http://localhost:3000](http://localhost:3000)
 
-## Project Structure
+### Production Build
+```bash
+# Create optimized production build
+npm run build
+```
+
+---
+
+## 📁 Project Structure
+
+<details>
+<summary><b>Complete File Tree (Click to expand)</b></summary>
 ```
 playguide/
-├── src/
-│   ├── assets/                  # Images, fonts, icons
-│   ├── components/
-│   │   ├── common/             # Reusable components
+│
+├── 📂 public/
+│   ├── index.html
+│   └── assets/               # Static assets
+│
+├── 📂 src/
+│   │
+│   ├── 📂 assets/            # Images, fonts, icons
+│   │
+│   ├── 📂 components/
+│   │   │
+│   │   ├── 📂 common/        # Reusable components
 │   │   │   ├── Controls.jsx
 │   │   │   ├── FavoritesModal.jsx
 │   │   │   ├── GameCard.jsx
@@ -55,18 +124,25 @@ playguide/
 │   │   │   ├── RecentViewsModal.jsx
 │   │   │   ├── SearchBar.jsx
 │   │   │   ├── SearchGameItem.jsx
-│   │   │   └── Stats.jsx
-│   │   ├── sections/           # Section components
-│   │   │   ├── CategoriesSection/
+│   │   │   ├── Stats.jsx
+│   │   │   └── index.js
+│   │   │
+│   │   ├── 📂 sections/      # Section components
+│   │   │   │
+│   │   │   ├── 📂 CategoriesSection/
 │   │   │   │   └── CategoriesSection.jsx
-│   │   │   ├── Header/
+│   │   │   │
+│   │   │   ├── 📂 Header/
 │   │   │   │   ├── Header.jsx
 │   │   │   │   └── HeroSection.jsx
-│   │   │   ├── TopRatedSection/
+│   │   │   │
+│   │   │   ├── 📂 TopRatedSection/
 │   │   │   │   └── TopRatedSection.jsx
-│   │   │   └── TrendingSection/
+│   │   │   │
+│   │   │   └── 📂 TrendingSection/
 │   │   │       └── TrendingSection.jsx
-│   │   └── ui/                 # UI components
+│   │   │
+│   │   └── 📂 ui/            # UI components
 │   │       ├── ActionButton.jsx
 │   │       ├── CardOverlay.jsx
 │   │       ├── ErrorMessage.jsx
@@ -76,8 +152,10 @@ playguide/
 │   │       ├── LoadingSpinner.jsx
 │   │       ├── MetacriticScore.jsx
 │   │       ├── RatingBadge.jsx
-│   │       └── SectionHeader.jsx
-│   ├── hooks/                  # Custom React hooks
+│   │       ├── SectionHeader.jsx
+│   │       └── index.js
+│   │
+│   ├── 📂 hooks/             # Custom React hooks
 │   │   ├── index.js
 │   │   ├── useDocumentTitle.js
 │   │   ├── useFavorites.js
@@ -93,81 +171,348 @@ playguide/
 │   │   ├── useSearchInteractions.js
 │   │   ├── useSearchKeyboard.js
 │   │   └── useSearchResults.js
-│   ├── layout/                 # Layout components
-│   │   ├── Footer/
+│   │
+│   ├── 📂 layout/            # Layout components
+│   │   ├── 📂 Footer/
 │   │   │   └── Footer.jsx
-│   │   ├── Navbar/
+│   │   ├── 📂 Navbar/
 │   │   │   └── Navbar.jsx
 │   │   └── index.js
-│   ├── pages/                  # Page components
-│   │   ├── About/
+│   │
+│   ├── 📂 pages/             # Application pages
+│   │   ├── 📂 About/
 │   │   │   └── About.jsx
-│   │   ├── Contact/
+│   │   ├── 📂 Contact/
 │   │   │   └── Contact.jsx
-│   │   ├── Home/
+│   │   ├── 📂 Home/
 │   │   │   └── Home.jsx
-│   │   ├── ProductDetails/
+│   │   ├── 📂 ProductDetails/
 │   │   │   └── ProductDetails.jsx
-│   │   └── Products/
+│   │   └── 📂 Products/
 │   │       └── Products.jsx
-│   ├── routes/                 # Route configuration
+│   │
+│   ├── 📂 routes/            # Routing configuration
 │   │   └── router.jsx
-│   ├── utils/                  # Utility functions
+│   │
+│   ├── 📂 utils/             # Utility functions
 │   │   ├── dateUtils.js
 │   │   ├── formatUtils.js
 │   │   ├── iconUtils.js
-│   │   ├── index.js
-│   │   └── searchUtils.js
-│   ├── App.jsx                 # Main App component
-│   ├── index.css               # Global styles
-│   └── index.js                # Entry point
-├── public/                     # Static assets
-├── db.json                     # Game database (1000+ games)
-├── .gitignore
-├── package.json
-├── package-lock.json
-├── README.md
-├── CONTRIBUTING.md
-├── CODE_OF_CONDUCT.md
-├── SECURITY.md
-├── LICENSE
-└── tailwind.config.js          # Tailwind configuration
+│   │   ├── searchUtils.js
+│   │   └── index.js
+│   │
+│   ├── App.jsx               # Root component
+│   ├── index.js              # Entry point
+│   └── index.css             # Global styles
+│
+├── 📄 db.json                # Game database (1000+ games)
+├── 📄 .gitignore
+├── 📄 postcss.config.js
+├── 📄 tailwind.config.js
+├── 📄 package.json
+├── 📄 package-lock.json
+├── 📄 README.md
+├── 📄 CONTRIBUTING.md
+├── 📄 CODE_OF_CONDUCT.md
+├── 📄 SECURITY.md
+└── 📄 LICENSE
 ```
 
-## Game Data
-
-Game data is stored locally in `db.json`. The data was originally sourced from the RAWG API and includes:
-
-- Game title, slug, and release date
-- Ratings and Metacritic scores
-- Genres and platforms
-- Background images and screenshots
-- Playtime statistics
-
-## Available Scripts
-```bash
-# Start development server
-npm start
-
-# Build for production
-npm run build
-
-# Run production build locally
-npm run serve
-```
-
-## Contributing
-
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-For questions or support, contact: darkdeveloperassistant@gmail.com
+</details>
 
 ---
 
-**Made with ❤️ by Khatai Huseynzada**
+## 🛠️ Technology Stack
+
+### Core Technologies
+
+<table>
+<tr>
+<td align="center" width="25%">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="50"/><br>
+  <b>React 18+</b><br>
+  <sub>UI Framework</sub>
+</td>
+
+<td align="center" width="25%">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="50"/><br>
+  <b>JavaScript ES6+</b><br>
+  <sub>Language</sub>
+</td>
+
+<td align="center" width="25%">
+  <img src="https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/tailwindcss.svg" width="50"/><br>
+  <b>Tailwind CSS 3.x</b><br>
+  <sub>Styling</sub>
+</td>
+
+<td align="center" width="25%">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="50"/><br>
+  <b>Node.js 18+</b><br>
+  <sub>Runtime</sub>
+</td>
+</tr>
+</table>
+
+### Additional Libraries
+
+- **React Router** - Client-side routing
+- **localStorage** - User data persistence
+- **RAWG API** - Game data source (pre-fetched)
+
+---
+
+## 🌐 Browser Support
+
+<div align="center">
+
+| Browser | Version | Status |
+|---------|---------|--------|
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" width="20"/> Chrome | 90+ | ✅ Full Support |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" width="20"/> Firefox | 88+ | ✅ Full Support |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/safari/safari-original.svg" width="20"/> Safari | 14+ | ✅ Full Support |
+| <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge.svg" width="20"/> Edge | 90+ | ✅ Full Support |
+| <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera.svg" width="20"/> Opera | 76+ | ✅ Full Support |
+
+</div>
+
+### Required Browser Features
+
+- ES6+ JavaScript
+- CSS Grid & Flexbox
+- localStorage API
+- Responsive viewport support
+
+---
+
+## 🎮 Game Data
+
+PlayGuide stores all game data locally in `db.json`. This data was originally sourced from the RAWG API and includes:
+
+### Data Structure
+```javascript
+{
+  id: Number,                    // Unique game ID
+  name: String,                  // Game title
+  slug: String,                  // URL-friendly name
+  released: String,              // Release date (YYYY-MM-DD)
+  background_image: String,      // Main image URL
+  rating: Number,                // Average rating (0-5)
+  rating_top: Number,            // Top rating value
+  ratings_count: Number,         // Number of ratings
+  metacritic: Number,            // Metacritic score (0-100)
+  playtime: Number,              // Average playtime (hours)
+  genres: Array                  // Array of genre objects
+}
+```
+
+### Data Features
+
+- 1000+ pre-loaded games
+- Ratings and Metacritic scores
+- Multiple genres per game
+- High-quality images
+- Release dates and playtime statistics
+
+### Data Attribution
+
+RAWG API data is used for educational and non-commercial purposes only.
+
+---
+
+## 🔐 Security & Privacy
+
+This project follows a **privacy-first, zero-backend architecture**.  
+All functionality runs entirely in the user's browser with no external data flow.
+
+### 🔒 Security Highlights
+
+- ✅ No server-side data storage
+- ✅ Client-side processing only
+- ✅ No cookies, trackers, or fingerprinting
+- ✅ No third-party analytics or telemetry
+- ✅ No user data is collected, stored, or transmitted
+
+### 🛡️ Data Safety Guarantee
+
+> PlayGuide will **never** upload, sync, or share your data.  
+> All favorites, ratings, and viewing history remain local to your device.
+
+For security concerns, see [SECURITY.md](SECURITY.md).
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions from the community! Whether you're fixing bugs, adding features, or improving documentation, your help is appreciated.
+
+### Quick Contribution Guide
+```bash
+# 1. Fork the repository
+# 2. Create your feature branch
+git checkout -b feature/amazing-feature
+
+# 3. Commit your changes
+git commit -m 'feat: add amazing feature'
+
+# 4. Push to the branch
+git push origin feature/amazing-feature
+
+# 5. Open a Pull Request
+```
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:
+- Code standards and best practices
+- Pull request process
+- Bug reporting
+- Feature requests
+
+### Code of Conduct
+
+This project adheres to the Contributor Covenant [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+
+### Contributors
+
+Thanks to all the contributors who have helped make PlayGuide better!
+
+<a href="https://github.com/BilgeGates/Functional_Gaming-Site/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=BilgeGates/Functional_Gaming-Site" />
+</a>
+
+---
+
+## 📝 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+```
+MIT License
+
+Copyright (c) 2026 Khatai Huseynzada
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+---
+
+## 👨‍💻 Author
+
+<div align="center">
+
+### Khatai Huseynzada
+
+**Front-End Web Developer | Open Source Contributor**
+
+[![GitHub](https://img.shields.io/badge/GitHub-Profile-181717?style=for-the-badge&logo=github)](https://github.com/BilgeGates)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/khatai-huseynzada)
+[![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:darkdeveloperassistant@gmail.com)
+
+</div>
+
+---
+
+## 🙏 Acknowledgments
+
+This project wouldn't be possible without these amazing resources:
+
+<table>
+<tr>
+<td align="center" width="33%">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="100"/><br>
+  <b>React Team</b><br>
+  <sub>Amazing framework</sub>
+</td>
+  
+<td align="center" width="33%">
+  <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/tailwindcss.svg" width="100"/><br>
+  <b>Tailwind Labs</b><br>
+  <sub>Beautiful utilities</sub>
+</td>
+
+<td align="center" width="33%">
+  <b>RAWG API</b><br>
+  <sub>Game database</sub>
+</td>
+</tr>
+</table>
+
+---
+
+## 📧 Support & Contact
+
+### Get Help
+
+<div align="center">
+
+| Channel | Link | Response Time |
+|---------|------|---------------|
+| 🐛 **Bug Reports** | [GitHub Issues](https://github.com/BilgeGates/Functional_Gaming-Site/issues) | 24-48 hours |
+| 💡 **Feature Requests** | [GitHub Discussions](https://github.com/BilgeGates/Functional_Gaming-Site/discussions) | 1-3 days |
+| 📧 **Email** | darkdeveloperassistant@gmail.com | 2-5 days |
+
+</div>
+
+---
+
+## ❓ FAQ
+
+<details>
+<summary><b>How do I report a bug?</b></summary>
+
+1. Check if the issue already exists in [GitHub Issues](https://github.com/BilgeGates/Functional_Gaming-Site/issues)
+2. If not, create a new issue with:
+   - Clear description of the problem
+   - Steps to reproduce
+   - Expected vs actual behavior
+   - Screenshots (if applicable)
+   - Browser and OS information
+</details>
+
+<details>
+<summary><b>Can I use this commercially?</b></summary>
+
+Yes! The source code is MIT licensed and can be used commercially.  
+However, game data originally sourced from the RAWG API is intended for educational and non-commercial use only. If you plan to use this project commercially, you must replace the data source with a licensed provider.
+</details>
+
+<details>
+<summary><b>How do I add more games?</b></summary>
+
+1. Games are stored in `db.json`
+2. Follow the existing data structure
+3. Add new game objects to the array
+4. Submit a pull request with your changes
+</details>
+
+<details>
+<summary><b>Where does the game data come from?</b></summary>
+
+Game data was originally sourced from the RAWG API and is now maintained locally in `db.json`.  
+The application does not fetch data at runtime.
+</details>
+
+<details>
+<summary><b>How is my data stored?</b></summary>
+
+All user data (favorites, ratings, viewing history) is stored locally in your browser using localStorage.  
+No data is sent to any server.
+</details>
+
+---
+
+**© 2026 Khatai Huseynzada. Licensed under MIT.**
