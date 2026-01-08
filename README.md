@@ -45,7 +45,7 @@ Built for gamers, streamers, and developers who need **fast, comprehensive, and 
 
 ## ✨ Features
 
-- Browse 1000+ games with detailed information
+- Browse 1000 games with detailed information
 - View ratings, Metacritic scores, and genres
 - Add games to favorites
 - Rate games and submit reviews
