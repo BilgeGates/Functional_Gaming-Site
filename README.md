@@ -10,7 +10,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-[Live Demo](#) ·
+[Live Demo](https://playguide-site.vercel.app/) ·
 [Report Bug](https://github.com/BilgeGates/Functional_Gaming-Site/issues) ·
 [Request Feature](https://github.com/BilgeGates/Functional_Gaming-Site/issues)
 
@@ -57,7 +57,7 @@ Built for gamers, streamers, and developers who need **fast, comprehensive, and 
 
 ## 🖼 Demo & Screenshots
 
-> **Live demo:** Coming soon
+> **Live demo:** https://playguide-site.vercel.app/
 
 <img src='./docs/assets/screenshoot_1.jpg' />
 ---
