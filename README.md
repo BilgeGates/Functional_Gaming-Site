@@ -263,11 +263,11 @@ playguide/
 
 | Browser | Version | Status |
 |---------|---------|--------|
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" width="20"/> Chrome | 90+ | ✅ Full Support |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" width="20"/> Firefox | 88+ | ✅ Full Support |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/safari/safari-original.svg" width="20"/> Safari | 14+ | ✅ Full Support |
-| <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge.svg" width="20"/> Edge | 90+ | ✅ Full Support |
-| <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera.svg" width="20"/> Opera | 76+ | ✅ Full Support |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" width="20"/> Chrome | 90+ | ✅ Tested |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" width="20"/> Firefox | 88+ | ✅ Tested |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/safari/safari-original.svg" width="20"/> Safari | 14+ | ✅ Expected to work |
+| <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge.svg" width="20"/> Edge | 90+ | ✅ Expected to work |
+| <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera.svg" width="20"/> Opera | 76+ | ✅ Expected to work |
 
 </div>
 
@@ -454,11 +454,13 @@ This project wouldn't be possible without these amazing resources:
 
 <div align="center">
 
-| Channel | Link | Response Time |
-|---------|------|---------------|
-| 🐛 **Bug Reports** | [GitHub Issues](https://github.com/BilgeGates/Functional_Gaming-Site/issues) | 24-48 hours |
-| 💡 **Feature Requests** | [GitHub Discussions](https://github.com/BilgeGates/Functional_Gaming-Site/discussions) | 1-3 days |
-| 📧 **Email** | darkdeveloperassistant@gmail.com | 2-5 days |
+| Channel | Link |
+|---------|------|
+| 🐛 **Bug Reports** | [GitHub Issues](https://github.com/BilgeGates/Clock/issues) |
+| 💡 **Feature Requests** | [GitHub Discussions](https://github.com/BilgeGates/Clock/discussions) |
+| 📧 **Email** | darkdeveloperassistant@gmail.com |
+
+*Responses on a best-effort basis*
 
 </div>
 
