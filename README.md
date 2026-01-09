@@ -2,10 +2,11 @@
 
 <div align="center">
 
-**Comprehensive game information platform with 1000+ games and detailed statistics**
+**Game information platform with 1000+ games database**
 
 [![React](https://img.shields.io/badge/React-18%2B-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![RAWG API](https://img.shields.io/badge/RAWG_API-Game_Data-orange?style=flat-square)](https://rawg.io/apidocs)
 [![Privacy](https://img.shields.io/badge/privacy-local--only-blue?style=flat-square)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
@@ -37,8 +38,7 @@
 
 ## 🌟 Overview
 
-PlayGuide is a modern web application for browsing and discovering **1000+ games** with detailed information.  
-Built for gamers, streamers, and developers who need **fast, comprehensive, and customizable** game information at their fingertips.
+Web application for browsing 1000+ games with ratings, Metacritic scores, and genre information. Built with React and runs entirely in the browser.
 
 ---
 
@@ -48,10 +48,10 @@ Built for gamers, streamers, and developers who need **fast, comprehensive, and 
 - View ratings, Metacritic scores, and genres
 - Add games to favorites
 - Rate games and submit reviews
-- Advanced search and filtering (by name, genre, platform)
+- Search and filter by name, genre, platform
 - View game details, screenshots, and statistics
 - Viewing history and recently viewed games
-- Responsive design for all devices
+- Responsive design
 
 ---
 
@@ -95,7 +95,6 @@ npm run build
 ---
 
 ## 📁 Project Structure
-
 ```
 playguide/
 │
@@ -305,7 +304,6 @@ PlayGuide stores all game data locally in `db.json`. This data was originally so
 - 1000+ pre-loaded games
 - Ratings and Metacritic scores
 - Multiple genres per game
-- High-quality images
 - Release dates and playtime statistics
 
 ### Data Attribution
@@ -316,8 +314,7 @@ RAWG API data is used for educational and non-commercial purposes only.
 
 ## 🔐 Security & Privacy
 
-This project follows a **privacy-first, zero-backend architecture**.  
-All functionality runs entirely in the user's browser with no external data flow.
+Zero-backend architecture - all functionality runs in the browser.
 
 ### 🔒 Security Highlights
 
@@ -327,10 +324,9 @@ All functionality runs entirely in the user's browser with no external data flow
 - ✅ No third-party analytics or telemetry
 - ✅ No user data is collected, stored, or transmitted
 
-### 🛡️ Data Safety Guarantee
+### 🛡️ Data Safety
 
-> PlayGuide will **never** upload, sync, or share your data.  
-> All favorites, ratings, and viewing history remain local to your device.
+All favorites, ratings, and viewing history are stored locally using localStorage.
 
 For security concerns, see [SECURITY.md](SECURITY.md).
 
@@ -338,7 +334,7 @@ For security concerns, see [SECURITY.md](SECURITY.md).
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! Whether you're fixing bugs, adding features, or improving documentation, your help is appreciated.
+Contributions welcome.
 
 ### Quick Contribution Guide
 ```bash
@@ -366,8 +362,6 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:
 This project adheres to the Contributor Covenant [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
 ### Contributors
-
-Thanks to all the contributors who have helped make PlayGuide better!
 
 <a href="https://github.com/BilgeGates/Functional_Gaming-Site/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=BilgeGates/Functional_Gaming-Site" />
@@ -422,41 +416,37 @@ SOFTWARE.
 
 ## 🙏 Acknowledgments
 
-This project wouldn't be possible without these amazing resources:
-
 <table>
 <tr>
 <td align="center" width="33%">
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="100"/><br>
   <b>React Team</b><br>
-  <sub>Amazing framework</sub>
+  <sub>Framework</sub>
 </td>
   
 <td align="center" width="33%">
   <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/tailwindcss.svg" width="100"/><br>
   <b>Tailwind Labs</b><br>
-  <sub>Beautiful utilities</sub>
+  <sub>CSS Framework</sub>
 </td>
 
 <td align="center" width="33%">
   <b>RAWG API</b><br>
-  <sub>Game database</sub>
+  <sub>Game Database</sub>
 </td>
 </tr>
 </table>
 
 ---
 
-## 📧 Support & Contact
-
-### Get Help
+## 📧 Community & Support
 
 <div align="center">
 
 | Channel | Link |
 |---------|------|
-| 🐛 **Bug Reports** | [GitHub Issues](https://github.com/BilgeGates/Clock/issues) |
-| 💡 **Feature Requests** | [GitHub Discussions](https://github.com/BilgeGates/Clock/discussions) |
+| 🐛 **Bug Reports** | [GitHub Issues](https://github.com/BilgeGates/Functional_Gaming-Site/issues) |
+| 💡 **Feature Requests** | [GitHub Discussions](https://github.com/BilgeGates/Functional_Gaming-Site/discussions) |
 | 📧 **Email** | darkdeveloperassistant@gmail.com |
 
 *Responses on a best-effort basis*
