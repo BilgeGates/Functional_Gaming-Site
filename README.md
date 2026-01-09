@@ -60,7 +60,6 @@ Built for gamers, streamers, and developers who need **fast, comprehensive, and 
 > **Live demo:** https://playguide-site.vercel.app/
 
 <img src='./docs/assets/screenshoot_1.jpg' />
----
 
 ## 🚀 Quick Start
 
